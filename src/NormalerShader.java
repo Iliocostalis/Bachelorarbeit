@@ -1,4 +1,8 @@
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL40;
+
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL40.*;
 
@@ -23,7 +27,7 @@ public class NormalerShader implements Shader{
             "\n" +
             "void main()\n" +
             "{\n" +
-            "    FragColor = vec4(oPos.x, oPos.y, oPos.z, 1.0f);\n" +
+            "    FragColor = vec4(oPos.x-1.0, oPos.y-1.0, oPos.z-1.0, 1.0f);\n" +
             "} ";
 
     int shaderProgram;
@@ -75,6 +79,7 @@ public class NormalerShader implements Shader{
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
 
+        glUseProgram(shaderProgram);
     }
 
     @Override
@@ -82,7 +87,6 @@ public class NormalerShader implements Shader{
         glUseProgram(shaderProgram);
 
         glBindVertexArray(objekt.mesh.VAO);
-        objekt.transformation.calculateMatrix();
         glUniformMatrix4fv(2, false, objekt.transformation.getMatrix());
         glDrawArrays(GL_TRIANGLES, 0, objekt.mesh.vertexCount);
     }

@@ -29,7 +29,8 @@ public class Renderer {
     public void setKamera(Kamera kamera)
     {
         kamera.bindRenderTarget();
-        kamera.bindMatrixToShader();
+        kamera.bindMatrixToShader(normalerShader.shaderProgram);
+        kamera.bindMatrixToShader(texturShader.shaderProgram);
     }
 
     public void draw(Objekt objekt)
