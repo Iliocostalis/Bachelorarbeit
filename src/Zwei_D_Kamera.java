@@ -8,28 +8,17 @@ import static org.lwjgl.opengl.GL40.*;
 
 public class Zwei_D_Kamera extends Sensor{
 
-    String vertexShaderSource = "#version 330 core\n" +
-            "layout (location = 0) in vec3 aPos;\n"+
-            "uniform vec3 aPosOffset;\n"+
-            "out vec3 oPos;\n"+
-            "void main()\n"+
-            "{\n"+
-            "   gl_Position = vec4(aPos.x + aPosOffset.x, aPos.y, aPos.z, 1.0);\n"+
-            "   oPos = vec3(aPos.x+1.0, aPos.y+1.0, aPos.z+1.0);\n"+
-            "}\0";
+    int width;
+    int height;
 
-    String fragmentShaderSource = "#version 330 core\n" +
-            "in vec3 oPos;\n"+
-            "out vec4 FragColor;\n" +
-            "\n" +
-            "void main()\n" +
-            "{\n" +
-            "    FragColor = vec4(oPos.x, oPos.y, oPos.z, 1.0f);\n" +
-            "} ";
-
-    int shaderProgram;
-    int VAO;
+    int FBO;
+    int PBO;
+    int colorTexture;
+    int depthBuffer;
     int uniformID;
+    byte[] data;
+
+    Zwei_D_Kamera_Farben farben;
 
     public Zwei_D_Kamera()
     {
@@ -38,98 +27,67 @@ public class Zwei_D_Kamera extends Sensor{
 
     public void erstellen()
     {
-        int vertexShader;
-        vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, vertexShaderSource);
-        glCompileShader(vertexShader);
-
-        int[] success = new int[1];
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, success);
-
-        if(success[0] != 1)
-        {
-            String log = glGetShaderInfoLog(vertexShader);
-            System.out.println(log);
-        }
-
-        int fragmentShader;
-        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, fragmentShaderSource);
-        glCompileShader(fragmentShader);
-
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, success);
-
-        if(success[0] != 1)
-        {
-            String log = glGetShaderInfoLog(fragmentShader);
-            System.out.println(log);
-        }
-
-        shaderProgram = glCreateProgram();
-
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
-        glLinkProgram(shaderProgram);
-
-        glGetShaderiv(shaderProgram, GL_LINK_STATUS, success);
-
-        if(success[0] != 1)
-        {
-            String log = glGetShaderInfoLog(shaderProgram);
-            System.out.println(log);
-        }
-
-        uniformID = glGetUniformLocation(shaderProgram,"aPosOffset");
-
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-
-
-        glUseProgram(shaderProgram);
-
-        /*
-        // 0. copy our vertices array in a buffer for OpenGL to use
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
-        // 1. then set the vertex attributes pointers
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 3, 0);
-        glEnableVertexAttribArray(0);*/
-
-        int VBO = glGenBuffers();
-        //glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        //glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
-
-
-        VAO = glGenVertexArrays();
-        // 1. bind Vertex Array Object
-        glBindVertexArray(VAO);
-        // 2. copy our vertices array in a buffer for OpenGL to use
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
-        // 3. then set our vertex attributes pointers
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 12, 0);
-        glEnableVertexAttribArray(0);
-
-
+        data = new byte[width*height*byteProPixel()];
         createFrameBuffer();
         createPBO();
+    }
 
-        if(sendImage)
+    public void createFrameBuffer()
+    {
+        FBO = glGenFramebuffers();
+        colorTexture = glGenTextures();
+        depthBuffer = glGenRenderbuffers();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+        glBindTexture(GL_TEXTURE_2D, colorTexture);
+
+        int farbformat;
+        switch (farben)
         {
-            try {
-                serverSocket = new ServerSocket(25131);
-                clientSocket = serverSocket.accept();
-                os = clientSocket.getOutputStream();
-                is = clientSocket.getInputStream();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            case SCHWARZ_WEISS -> farbformat = GL_RED;
+            case RGB -> farbformat = GL_RGB;
+            case BGR -> farbformat = GL_BGR;
+            default -> farbformat = GL_RGB;
         }
+        glTexImage2D(GL_TEXTURE_2D, 0, farbformat, width, height, 0, farbformat, GL_UNSIGNED_BYTE, 0);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
+
+        glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+        glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void createPBO()
+    {
+        PBO = glGenBuffers();
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO);
+        glBufferData(GL_PIXEL_PACK_BUFFER, width*height*byteProPixel(), GL_STREAM_READ);
     }
 
     public void zerstoeren()
     {
 
+    }
+
+    int byteProPixel()
+    {
+        switch (farben)
+        {
+            case SCHWARZ_WEISS:
+                return 1;
+            case RGB:
+                return 3;
+            case BGR:
+                return 3;
+            default:
+                return 3;
+        }
     }
 
     @Override
@@ -141,14 +99,13 @@ public class Zwei_D_Kamera extends Sensor{
         glClearColor(0,0.5f,1,1);
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
 
-        glBindVertexArray(VAO);
-        glUniform3f(uniformID, val, 0,0);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        //glUniform3f(uniformID, val, 0,0);
+
+        //draw all
+
         glFlush();
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 
         //read
         glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
@@ -159,7 +116,7 @@ public class Zwei_D_Kamera extends Sensor{
         byteBuffer.get(data);
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 
-
+        Schnittstelle.getInstance();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

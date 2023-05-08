@@ -94,12 +94,15 @@ public class Fenster {
             umgebung.visualisieren();
 
             glfwSwapBuffers(window); // swap the color buffers
-            System.out.println(System.currentTimeMillis() - time);
+            //System.out.println(System.currentTimeMillis() - time);
             time = System.currentTimeMillis();
+
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
         }
+
+        schließen();
     }
 
     void schließen()

@@ -1,4 +1,9 @@
-public abstract class Objekt {
-    public Position position;
-    public Rotation rotation;
+public class Objekt {
+    public Transformation transformation = new Transformation();
+    public Mesh mesh;
+
+    public ShaderTyp getShaderTyp()
+    {
+        return mesh.shaderTyp;
+    }
 }
