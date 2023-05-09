@@ -6,6 +6,7 @@ public class Main {
 
         Schnittstelle.getInstance().start();
 
+        UmgebungsLader.load();
         Fenster fenster = new Fenster();
 
         while(fenster.istOffen())

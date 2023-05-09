@@ -23,7 +23,7 @@ public class Umgebung {
 
 
         Objekt objektTxt = new Objekt();
-        int txId = TextureLoader.getInstance().loadTexture("C:\\Dev\\Java\\Bachelorarbeit\\images\\test.png");
+        int txId = TextureLoader.getInstance().loadTexture("assets\\images\\test.png");
         float[] positionentxt = {0f,0f,0f, 1f,0f,0f, 1f,1f,0f,    0f,0f,0f, 1f,1f,0f, 0f,1f,0f};
         float[] tx = {0f,0f, 1f,0f, 1f,1f,    0f,0f, 1f,1f, 0f,1f};
         objektTxt.mesh = new Mesh(positionentxt, tx, txId);

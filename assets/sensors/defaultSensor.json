@@ -1,0 +1,8 @@
+{
+    "name": "default_sensor",
+    "mesh": {
+        "vertex": [0,0,0],
+        "tex": [0,0,0],
+        "texturePath": "C:/"
+    }
+}
