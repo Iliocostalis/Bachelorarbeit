@@ -1,8 +1,9 @@
 {
     "name": "default_sensor",
-    "mesh": {
-        "vertex": [0,0,0],
-        "tex": [0,0,0],
-        "texturePath": "C:/"
-    }
+    "type": "CAMERA_2D",
+    "fov": 60,
+    "resolution_width": 1080,
+    "resolution_height": 720,
+    "framerate": 30,
+    "color_format": "RGB"
 }

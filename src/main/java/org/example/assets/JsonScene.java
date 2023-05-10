@@ -1,7 +1,6 @@
 package org.example.assets;
 
-public class JsonScene {
-    String name;
-    String enviroment;
-    float[] car_position;
+public class JsonScene extends JsonSuperClass {
+    public String enviroment;
+    public JsonChild car;
 }

@@ -19,7 +19,6 @@ public class Fenster {
     private long window;
     private boolean offen = false;
 
-    private Umgebung umgebung;
 
     Fenster()
     {
@@ -37,7 +36,7 @@ public class Fenster {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
         // Create the window
-        window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
+        window = glfwCreateWindow(720, 480, "Hello World!", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -45,6 +44,13 @@ public class Fenster {
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
             if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+
+            if(key == GLFW_KEY_D && action == GLFW_PRESS)
+                Auto.rotationS = 40f;
+            if(key == GLFW_KEY_A && action == GLFW_PRESS)
+                Auto.rotationS = -40f;
+            if(action == GLFW_RELEASE)
+                Auto.rotationS = 0f;
         });
 
         // Get the thread stack and push a new frame
@@ -77,8 +83,7 @@ public class Fenster {
         offen = true;
 
         GL.createCapabilities();
-
-        umgebung = new Umgebung();
+        glEnable(GL_DEPTH_TEST);
     }
 
     void update()
@@ -91,7 +96,8 @@ public class Fenster {
         long time = System.currentTimeMillis();
         while ( !glfwWindowShouldClose(window) ) {
 
-            umgebung.visualisieren();
+            Umgebung.umgebung.aktualisieren();
+            Umgebung.umgebung.visualisieren();
 
             glfwSwapBuffers(window); // swap the color buffers
             //System.out.println(System.currentTimeMillis() - time);

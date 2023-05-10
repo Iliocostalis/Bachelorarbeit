@@ -13,7 +13,22 @@ public class Mesh {
 
     int textureId;
 
+    Mesh(float[] positionen, float[] texturKoordinaten, String texturePath)
+    {
+        boolean hasTexture = false;
+        hasTexture = texturKoordinaten.length > 0 && !texturePath.equals("");
+
+        if(hasTexture)
+            generateMesh(positionen, texturKoordinaten, TextureLoader.getInstance().loadTexture(texturePath));
+        else
+            generateMesh(positionen, null, 0);
+    }
     Mesh(float[] positionen, float[] texturKoordinaten, int textureId)
+    {
+        generateMesh(positionen, texturKoordinaten, textureId);
+    }
+
+    private void generateMesh(float[] positionen, float[] texturKoordinaten, int textureId)
     {
         vertexCount = positionen.length / 3;
         this.textureId = textureId;

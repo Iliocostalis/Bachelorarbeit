@@ -10,8 +10,7 @@ import java.nio.FloatBuffer;
 public class Transformation {
     public Vector3f position = new Vector3f();
     public Quaternionf quaternion = new Quaternionf();
-    public Matrix4f matrix = new Matrix4f();
-    public Matrix4f matrix2 = new Matrix4f();
+    private Matrix4f matrix = new Matrix4f();
 
     private FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 

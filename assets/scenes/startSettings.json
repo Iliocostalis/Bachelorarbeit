@@ -1,5 +1,5 @@
 {
     "name": "start_settings",
     "enviroment": "default_map",
-    "car_position": [0,0,0]
+    "car": {"name": "default_car", "position": [0,0.1,0], "rotation": [0,0,0]}
 }
