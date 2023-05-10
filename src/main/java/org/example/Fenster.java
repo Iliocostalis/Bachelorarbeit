@@ -9,15 +9,14 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL40.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Fenster {
 
-    private long window;
-    private boolean offen = false;
+    private final long window;
+    private boolean offen;
 
 
     Fenster()
@@ -46,9 +45,9 @@ public class Fenster {
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 
             if(key == GLFW_KEY_D && action == GLFW_PRESS)
-                Auto.rotationS = 40f;
-            if(key == GLFW_KEY_A && action == GLFW_PRESS)
                 Auto.rotationS = -40f;
+            if(key == GLFW_KEY_A && action == GLFW_PRESS)
+                Auto.rotationS = 40f;
             if(action == GLFW_RELEASE)
                 Auto.rotationS = 0f;
         });

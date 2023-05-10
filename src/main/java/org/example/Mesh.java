@@ -1,28 +1,25 @@
 package org.example;
 
-import org.example.assets.JsonMesh;
+import org.example.assets.JsonObjekt;
 import org.lwjgl.opengl.GL40;
 
 public class Mesh {
-    float[] positionen;
-    float[] texturKoordinaten;
-    ShaderTyp shaderTyp;
-    int VBO;
-    int VBOTexture;
-    int VAO;
-    int vertexCount;
+    private ShaderTyp shaderTyp;
+    private int VBO;
+    private int VBOTexture;
+    private int VAO;
+    private int vertexCount;
 
-    int textureId;
+    private int textureId;
 
-    Mesh(JsonMesh jsonMesh)
+    Mesh(JsonObjekt jsonObjekt)
     {
-        this(jsonMesh.vertex, jsonMesh.texture, jsonMesh.texturePath);
+        this(jsonObjekt.vertex, jsonObjekt.texture, jsonObjekt.texturePath);
     }
 
     Mesh(float[] positionen, float[] texturKoordinaten, String texturePath)
     {
-        boolean hasTexture = false;
-        hasTexture = texturKoordinaten.length > 0 && !texturePath.equals("");
+        boolean hasTexture = texturKoordinaten.length > 0 && !texturePath.equals("");
 
         if(hasTexture)
             generateMesh(positionen, texturKoordinaten, TextureLoader.getInstance().loadTexture(texturePath));

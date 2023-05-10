@@ -87,7 +87,7 @@ public class UmgebungsLader {
         if(meshs.containsKey(hash))
             return hash;
 
-        Mesh mesh = new Mesh(jsonObjekt.mesh);
+        Mesh mesh = new Mesh(jsonObjekt);
         meshs.put(hash, mesh);
         return hash;
     }
@@ -96,40 +96,29 @@ public class UmgebungsLader {
     {
         Umgebung umgebung = new Umgebung();
 
-        JsonScene jsonScene = scenes.get(scene);
-        if(jsonScene == null)
-            throw new IllegalArgumentException();
+        try{
+            JsonScene jsonScene = scenes.get(scene);
 
-        JsonMap jsonMap = maps.get(jsonScene.enviroment);
-        if(jsonMap == null)
-            throw new RuntimeException();
+            JsonMap jsonMap = maps.get(jsonScene.enviroment);
 
-        JsonObjektInstance jsonCarInstance = jsonScene.car;
+            JsonCar jsonCar = cars.get(jsonScene.car.name);
 
-        JsonCar jsonCar = cars.get(jsonCarInstance.name);
-        if(jsonCar == null)
-            throw new RuntimeException();
+            JsonObjekt jsonCarObjekt = objects.get(jsonCar.objekt_name);
 
-        JsonObjektInstance[] jsonObjektInstances = jsonMap.objekts;
+            umgebung.auto = new Auto(jsonScene.car, loadMesh(jsonCarObjekt));
 
-        for(JsonObjektInstance child : jsonObjektInstances)
+            for(JsonObjektInstance child : jsonMap.objekts)
+            {
+                JsonObjekt jsonObjekt = objects.get(child.name);
+
+                Objekt objekt = new Objekt(child, loadMesh(jsonObjekt));
+
+                umgebung.objekte.add(objekt);
+            }
+        }catch (Exception e)
         {
-            JsonObjekt jsonObjekt = objects.get(child.name);
-            if(jsonObjekt == null)
-                throw new RuntimeException();
-
-            int meshId = loadMesh(jsonObjekt);
-
-            Objekt objekt = new Objekt(child, meshId);
-
-            umgebung.objekte.add(objekt);
+            System.out.println("Fehler beim laden der Umgebung!");
         }
-
-        int meshId = loadMesh(jsonCar);
-
-        umgebung.auto = new Auto(jsonCarInstance, meshId);
-
-
 
         return umgebung;
     }
