@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.assets.JsonMesh;
 import org.lwjgl.opengl.GL40;
 
 public class Mesh {
@@ -13,6 +14,11 @@ public class Mesh {
 
     int textureId;
 
+    Mesh(JsonMesh jsonMesh)
+    {
+        this(jsonMesh.vertex, jsonMesh.texture, jsonMesh.texturePath);
+    }
+
     Mesh(float[] positionen, float[] texturKoordinaten, String texturePath)
     {
         boolean hasTexture = false;
@@ -23,6 +29,7 @@ public class Mesh {
         else
             generateMesh(positionen, null, 0);
     }
+
     Mesh(float[] positionen, float[] texturKoordinaten, int textureId)
     {
         generateMesh(positionen, texturKoordinaten, textureId);
@@ -77,5 +84,10 @@ public class Mesh {
     public int getTextureId()
     {
         return textureId;
+    }
+
+    public ShaderTyp getShaderTyp()
+    {
+        return shaderTyp;
     }
 }

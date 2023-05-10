@@ -5,6 +5,8 @@
         "texture": [],
         "texturePath": ""
     },
+    "car_length": 30,
+    "lenkwinkel": 40,
     "sensors": [
         {"name": "default_sensor", "position": [0,0,0], "rotation": [0,0,0]}
     ]

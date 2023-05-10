@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,8 +23,12 @@ public class UmgebungsLader {
     private static HashMap<String, JsonCar> cars;
     private static HashMap<String, JsonSensor> sensors;
 
+
+    private static HashMap<Integer, Mesh> meshs;
+
     public static void load()
     {
+        meshs = new HashMap<>();
         try {
             scenes = loadFilesInFolder("scenes", JsonScene.class);
             maps = loadFilesInFolder("maps", JsonMap.class);
@@ -43,10 +46,10 @@ public class UmgebungsLader {
 
         List<Path> files = getFilesInFolder(folderName);
 
+        Gson g = new Gson();
         for(Path path : files)
         {
             String file = readFile(path);
-            Gson g = new Gson();
             T t = g.fromJson(file, classOfT);
             map.put(t.name, t);
         }
@@ -78,6 +81,17 @@ public class UmgebungsLader {
         return fileNames;
     }
 
+    private static int loadMesh(JsonObjekt jsonObjekt)
+    {
+        int hash = jsonObjekt.name.hashCode();
+        if(meshs.containsKey(hash))
+            return hash;
+
+        Mesh mesh = new Mesh(jsonObjekt.mesh);
+        meshs.put(hash, mesh);
+        return hash;
+    }
+
     public static Umgebung getEnviroment(String scene)
     {
         Umgebung umgebung = new Umgebung();
@@ -90,52 +104,38 @@ public class UmgebungsLader {
         if(jsonMap == null)
             throw new RuntimeException();
 
-        JsonCar jsonCar = cars.get(jsonScene.car.name);
+        JsonObjektInstance jsonCarInstance = jsonScene.car;
+
+        JsonCar jsonCar = cars.get(jsonCarInstance.name);
         if(jsonCar == null)
             throw new RuntimeException();
 
-        //umgebung.auto = new Auto();
-        //umgebung.auto.transformation
+        JsonObjektInstance[] jsonObjektInstances = jsonMap.objekts;
 
-        umgebung.objekte.clear();
-
-        for(JsonChild child : jsonMap.objekts)
+        for(JsonObjektInstance child : jsonObjektInstances)
         {
-            Objekt objekt = new Objekt();
-            objekt.transformation.position.x = child.position[0];
-            objekt.transformation.position.y = child.position[1];
-            objekt.transformation.position.z = child.position[2];
-
-            objekt.transformation.quaternion.rotateXYZ((float)Math.toRadians(child.rotation[0]), (float)Math.toRadians(child.rotation[1]), (float)Math.toRadians(child.rotation[2]));
-            objekt.transformation.calculateMatrix();
-
             JsonObjekt jsonObjekt = objects.get(child.name);
             if(jsonObjekt == null)
                 throw new RuntimeException();
 
-            JsonMesh jsonMesh = jsonObjekt.mesh;
-            objekt.mesh = new Mesh(jsonMesh.vertex, jsonMesh.texture, jsonMesh.texturePath);
+            int meshId = loadMesh(jsonObjekt);
+
+            Objekt objekt = new Objekt(child, meshId);
 
             umgebung.objekte.add(objekt);
         }
 
-        Auto auto = new Auto();
-        auto.transformation.position.x = jsonScene.car.position[0];
-        auto.transformation.position.y = jsonScene.car.position[1];
-        auto.transformation.position.z = jsonScene.car.position[2];
+        int meshId = loadMesh(jsonCar);
 
-        auto.transformation.quaternion.rotateXYZ((float)Math.toRadians(jsonScene.car.rotation[0]), (float)Math.toRadians(jsonScene.car.rotation[1]), (float)Math.toRadians(jsonScene.car.rotation[2]));
-        auto.transformation.calculateMatrix();
-
-        JsonMesh jsonMesh = jsonCar.mesh;
-        auto.mesh = new Mesh(jsonMesh.vertex, jsonMesh.texture, jsonMesh.texturePath);
-
-        umgebung.auto = auto;
+        umgebung.auto = new Auto(jsonCarInstance, meshId);
 
 
-
-        //umgebung.objekte;
 
         return umgebung;
+    }
+
+    public static Mesh getMesh(int hash)
+    {
+        return meshs.get(hash);
     }
 }

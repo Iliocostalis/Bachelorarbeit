@@ -37,12 +37,12 @@ public class Renderer {
 
     public void draw(Objekt objekt)
     {
-        switch (objekt.getShaderTyp())
+        Mesh mesh = UmgebungsLader.getMesh(objekt.meshHash);
+
+        switch (mesh.getShaderTyp())
         {
-            case NORMAL -> normalerShader.draw(objekt);
-            case MIT_TEXTUR -> texturShader.draw(objekt);
+            case NORMAL -> normalerShader.draw(objekt, mesh);
+            case MIT_TEXTUR -> texturShader.draw(objekt, mesh);
         }
-
-
     }
 }

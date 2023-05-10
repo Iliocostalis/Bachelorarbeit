@@ -18,30 +18,27 @@ public class Kamera {
     int depthBuffer;
     int uniformID;
 
-    Matrix4f projection = new Matrix4f();
-    public Matrix4f view = new Matrix4f();
-    FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+    private Matrix4f projection = new Matrix4f();
+    private Matrix4f view = new Matrix4f();
+    private FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
-    public Transformation transformation = new Transformation();
-    Vector3f lookAt = new Vector3f();
-    Vector3f up = new Vector3f(0,1,0);
+    public Vector3f position = new Vector3f();
+    public Vector3f lookAt = new Vector3f();
+    private Vector3f up = new Vector3f(0,1,0);
 
-    RenderTarget renderTarget;
+    private RenderTarget renderTarget;
 
     Kamera(RenderTarget renderTarget)
     {
         this.renderTarget = renderTarget;
         projection.perspective((float)Math.toRadians(60.f) , 16.0f / 9.0f, 0.1f, 1000.f, true);
+        view.lookAt(position, lookAt, up);
+    }
 
-        transformation.position.x = 2f;
-        transformation.position.z = -4f;
-        transformation.position.y = 2f;
-        transformation.quaternion.rotateXYZ((float)Math.toRadians(30.f), 0, 0);
-        transformation.calculateMatrix();
-
-        lookAt.x = 2;
-        view.set(transformation.getMatrix());
-        view.lookAt(transformation.position, lookAt, up);
+    public void updateMatrix()
+    {
+        view.identity();
+        view.lookAt(position, lookAt, up);
     }
 
     public void bindRenderTarget()

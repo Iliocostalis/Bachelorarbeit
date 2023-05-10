@@ -1,6 +1,5 @@
 package org.example.assets;
 
-public class JsonCar extends JsonSuperClass {
-    public JsonMesh mesh;
-    public JsonChild[] sensors;
+public class JsonCar extends JsonObjekt {
+    public JsonObjektInstance[] sensors;
 }

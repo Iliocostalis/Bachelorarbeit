@@ -88,14 +88,13 @@ public class TexturShader implements Shader{
     }
 
     @Override
-    public void draw(Objekt objekt) {
+    public void draw(Objekt objekt, Mesh mesh) {
         glUseProgram(shaderProgram);
 
-        glBindVertexArray(objekt.mesh.VAO);
+        glBindVertexArray(mesh.VAO);
         glUniformMatrix4fv(2, false, objekt.transformation.getMatrix());
-
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, objekt.mesh.getTextureId());
-        glDrawArrays(GL_TRIANGLES, 0, objekt.mesh.vertexCount);
+        glBindTexture(GL_TEXTURE_2D, mesh.getTextureId());
+        glDrawArrays(GL_TRIANGLES, 0, mesh.vertexCount);
     }
 }

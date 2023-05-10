@@ -44,6 +44,7 @@ public class Umgebung {
         auto.move();
     }
 
+    Vector3f tmp = new Vector3f();
     public void visualisieren()
     {
         Renderer renderer = Renderer.getInstance();
@@ -51,10 +52,12 @@ public class Umgebung {
         //kamera.transformation.position.x += 0.001f;
         //if(kamera.transformation.position.x > 4)
         //    kamera.transformation.position.x -= 4;
-        kamera.transformation.position.x = 2;
-        kamera.transformation.position.y = 6;
-        kamera.view.identity();
-        kamera.view.lookAt(kamera.transformation.position, kamera.lookAt, kamera.up);
+        tmp.x = 2;
+        tmp.y = 6;
+        tmp.z = -5;
+
+        kamera.position.set(tmp);
+        kamera.updateMatrix();
 
         renderer.setKamera(kamera);
 

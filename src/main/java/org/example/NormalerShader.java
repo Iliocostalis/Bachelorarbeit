@@ -85,11 +85,11 @@ public class NormalerShader implements Shader{
     }
 
     @Override
-    public void draw(Objekt objekt) {
+    public void draw(Objekt objekt, Mesh mesh) {
         glUseProgram(shaderProgram);
 
-        glBindVertexArray(objekt.mesh.VAO);
+        glBindVertexArray(mesh.VAO);
         glUniformMatrix4fv(2, false, objekt.transformation.getMatrix());
-        glDrawArrays(GL_TRIANGLES, 0, objekt.mesh.vertexCount);
+        glDrawArrays(GL_TRIANGLES, 0, mesh.vertexCount);
     }
 }

@@ -1,6 +1,6 @@
 package org.example.assets;
 
-public class JsonChild extends JsonSuperClass {
+public class JsonObjektInstance extends JsonSuperClass {
     public float[] position;
     public float[] rotation;
 }
