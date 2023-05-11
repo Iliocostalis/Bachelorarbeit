@@ -1,6 +1,7 @@
 package org.example;
 
-import org.example.assets.JsonObjekt;
+import org.example.assets.JsonMesh;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL40;
 
 public class Mesh {
@@ -10,11 +11,13 @@ public class Mesh {
     private int VAO;
     private int vertexCount;
 
+    private Vector3f size;
+
     private int textureId;
 
-    Mesh(JsonObjekt jsonObjekt)
+    Mesh(JsonMesh jsonMesh)
     {
-        this(jsonObjekt.vertex, jsonObjekt.texture, jsonObjekt.texturePath);
+        this(jsonMesh.vertex, jsonMesh.texture, jsonMesh.texturePath);
     }
 
     Mesh(float[] positionen, float[] texturKoordinaten, String texturePath)
@@ -34,10 +37,33 @@ public class Mesh {
 
     private void generateMesh(float[] positionen, float[] texturKoordinaten, int textureId)
     {
+        // calculate size
+        float xMin = Float.MAX_VALUE;
+        float yMin = Float.MAX_VALUE;
+        float zMin = Float.MAX_VALUE;
+        float xMax = -Float.MAX_VALUE;
+        float yMax = -Float.MAX_VALUE;
+        float zMax = -Float.MAX_VALUE;
+        for(int i = 0; i < positionen.length; i+=3)
+        {
+            float x = positionen[i];
+            float y = positionen[i+1];
+            float z = positionen[i+2];
+
+            xMin = Math.min(xMin, x);
+            yMin = Math.min(yMin, y);
+            zMin = Math.min(zMin, z);
+
+            xMax = Math.max(xMax, x);
+            yMax = Math.max(yMax, y);
+            zMax = Math.max(zMax, z);
+        }
+        size = new Vector3f(xMax-xMin, yMax-yMin, zMax-zMin);
+
         vertexCount = positionen.length / 3;
         this.textureId = textureId;
 
-
+        // load mesh to gpu
         VAO = GL40.glGenVertexArrays();
         GL40.glBindVertexArray(VAO);
 
@@ -86,5 +112,10 @@ public class Mesh {
     public ShaderTyp getShaderTyp()
     {
         return shaderTyp;
+    }
+
+    public void getSize(Vector3f out)
+    {
+        out.set(size);
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "default_car",
-    "objekt_name": "default_car",
-    "car_length": 30,
+    "mesh_name": "default_car",
+    "car_length": 2,
     "lenkwinkel": 40,
     "sensors": [
         {"name": "default_sensor", "position": [0,0,0], "rotation": [0,0,0]}

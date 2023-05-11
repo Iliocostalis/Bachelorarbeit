@@ -91,10 +91,10 @@ public class TexturShader implements Shader{
     public void draw(Objekt objekt, Mesh mesh) {
         glUseProgram(shaderProgram);
 
-        glBindVertexArray(mesh.VAO);
+        glBindVertexArray(mesh.getVAO());
         glUniformMatrix4fv(2, false, objekt.transformation.getMatrix());
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, mesh.getTextureId());
-        glDrawArrays(GL_TRIANGLES, 0, mesh.vertexCount);
+        glDrawArrays(GL_TRIANGLES, 0, mesh.getVertexCount());
     }
 }

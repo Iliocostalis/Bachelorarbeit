@@ -19,20 +19,20 @@ public class UmgebungsLader {
 
     private static HashMap<String, JsonScene> scenes;
     private static HashMap<String, JsonMap> maps;
-    private static HashMap<String, JsonObjekt> objects;
+    private static HashMap<String, JsonMesh> meshs;
     private static HashMap<String, JsonCar> cars;
     private static HashMap<String, JsonSensor> sensors;
 
 
-    private static HashMap<Integer, Mesh> meshs;
+    private static HashMap<Integer, Mesh> loadedMeshs;
 
     public static void load()
     {
-        meshs = new HashMap<>();
+        loadedMeshs = new HashMap<>();
         try {
             scenes = loadFilesInFolder("scenes", JsonScene.class);
             maps = loadFilesInFolder("maps", JsonMap.class);
-            objects = loadFilesInFolder("objekts", JsonObjekt.class);
+            meshs = loadFilesInFolder("meshs", JsonMesh.class);
             cars = loadFilesInFolder("cars", JsonCar.class);
             sensors = loadFilesInFolder("sensors", JsonSensor.class);
         } catch (IOException e) {
@@ -81,14 +81,14 @@ public class UmgebungsLader {
         return fileNames;
     }
 
-    private static int loadMesh(JsonObjekt jsonObjekt)
+    private static int loadMesh(JsonMesh jsonMesh)
     {
-        int hash = jsonObjekt.name.hashCode();
-        if(meshs.containsKey(hash))
+        int hash = jsonMesh.name.hashCode();
+        if(loadedMeshs.containsKey(hash))
             return hash;
 
-        Mesh mesh = new Mesh(jsonObjekt);
-        meshs.put(hash, mesh);
+        Mesh mesh = new Mesh(jsonMesh);
+        loadedMeshs.put(hash, mesh);
         return hash;
     }
 
@@ -96,26 +96,22 @@ public class UmgebungsLader {
     {
         Umgebung umgebung = new Umgebung();
 
-        try{
+        try {
             JsonScene jsonScene = scenes.get(scene);
 
             JsonMap jsonMap = maps.get(jsonScene.enviroment);
+            JsonCar jsonCar = cars.get(jsonScene.car_instance.name);
+            JsonMesh jsonCarObjekt = meshs.get(jsonCar.mesh_name);
 
-            JsonCar jsonCar = cars.get(jsonScene.car.name);
+            umgebung.auto = new Auto(jsonCar, jsonScene.car_instance, loadMesh(jsonCarObjekt));
 
-            JsonObjekt jsonCarObjekt = objects.get(jsonCar.objekt_name);
-
-            umgebung.auto = new Auto(jsonScene.car, loadMesh(jsonCarObjekt));
-
-            for(JsonObjektInstance child : jsonMap.objekts)
+            for(JsonObjektInstance instance : jsonMap.objekts)
             {
-                JsonObjekt jsonObjekt = objects.get(child.name);
-
-                Objekt objekt = new Objekt(child, loadMesh(jsonObjekt));
-
+                JsonMesh jsonMesh = meshs.get(instance.name);
+                Objekt objekt = new Objekt(instance, loadMesh(jsonMesh));
                 umgebung.objekte.add(objekt);
             }
-        }catch (Exception e)
+        } catch (Exception e)
         {
             System.out.println("Fehler beim laden der Umgebung!");
         }
@@ -125,6 +121,6 @@ public class UmgebungsLader {
 
     public static Mesh getMesh(int hash)
     {
-        return meshs.get(hash);
+        return loadedMeshs.get(hash);
     }
 }

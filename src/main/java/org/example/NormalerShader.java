@@ -88,8 +88,8 @@ public class NormalerShader implements Shader{
     public void draw(Objekt objekt, Mesh mesh) {
         glUseProgram(shaderProgram);
 
-        glBindVertexArray(mesh.VAO);
+        glBindVertexArray(mesh.getVAO());
         glUniformMatrix4fv(2, false, objekt.transformation.getMatrix());
-        glDrawArrays(GL_TRIANGLES, 0, mesh.vertexCount);
+        glDrawArrays(GL_TRIANGLES, 0, mesh.getVertexCount());
     }
 }

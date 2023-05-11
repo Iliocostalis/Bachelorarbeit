@@ -11,6 +11,8 @@ import java.nio.FloatBuffer;
 public class Transformation {
     private Vector3f position;
     private Quaternionf quaternion;
+
+    private float scale;
     private Matrix4f matrix;
 
     private FloatBuffer matrixBuffer;
@@ -21,6 +23,7 @@ public class Transformation {
     {
         position = new Vector3f();
         quaternion = new Quaternionf();
+        scale = 1f;
         matrix = new Matrix4f();
         matrixBuffer = BufferUtils.createFloatBuffer(16);
         gotModified = true;
@@ -31,6 +34,7 @@ public class Transformation {
         position = new Vector3f(jsonObjektInstance.position[0], jsonObjektInstance.position[1], jsonObjektInstance.position[2]);
         quaternion = new Quaternionf();
         quaternion.rotationXYZ(jsonObjektInstance.rotation[0] * ConstValues.DEGREES_TO_RADIANS, jsonObjektInstance.rotation[1] * ConstValues.DEGREES_TO_RADIANS, jsonObjektInstance.rotation[2] * ConstValues.DEGREES_TO_RADIANS);
+        scale = 1f;
         matrix = new Matrix4f();
         matrixBuffer = BufferUtils.createFloatBuffer(16);
         gotModified = true;
@@ -41,6 +45,7 @@ public class Transformation {
         matrix.identity();
         matrix.translate(position);
         matrix.rotate(quaternion);
+        matrix.scale(scale);
         matrix.get(matrixBuffer);
         gotModified = false;
     }
@@ -54,6 +59,17 @@ public class Transformation {
     {
         gotModified = true;
         this.position.set(position);
+    }
+
+    public float getScale()
+    {
+        return scale;
+    }
+
+    public void setScale(float scale)
+    {
+        gotModified = true;
+        this.scale = scale;
     }
 
     public void getQuaternion(Quaternionf out)
