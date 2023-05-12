@@ -81,6 +81,17 @@ public class RenderTarget {
         };
     }
 
+    public int getOpenGlFormat()
+    {
+        return switch (farben) {
+            case SCHWARZ_WEISS -> GL_R;
+            case RGB -> GL_RGB;
+            case BGR -> GL_BGR;
+            case RGBA -> GL_RGBA;
+            default -> GL_RGB;
+        };
+    }
+
     public void bind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

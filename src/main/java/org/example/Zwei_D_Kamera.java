@@ -1,5 +1,6 @@
 package org.example;
 
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL40;
 
 import java.io.IOException;
@@ -13,63 +14,43 @@ public class Zwei_D_Kamera extends Sensor{
     int width;
     int height;
 
-    int FBO;
     int PBO;
-    int colorTexture;
-    int depthBuffer;
-    int uniformID;
     byte[] data;
+    private final int sensorInfoSize = 9;
+    private int imageSize;
 
     Zwei_D_Kamera_Farben farben;
 
-    public Zwei_D_Kamera()
-    {
 
-    }
 
-    public void erstellen()
+
+
+
+    private RenderTarget renderTarget;
+    private Kamera kamera;
+
+    public Zwei_D_Kamera(Umgebung umgebung)
     {
-        data = new byte[width*height*byteProPixel()];
-        createFrameBuffer();
+        this.umgebung = umgebung;
+        width = 300;
+        height = 300;
+        renderTarget = new RenderTarget(width, height, RENDER_TARGET_COLOR_FORMAT.RGB);
+        kamera = new Kamera(renderTarget);
         createPBO();
-    }
 
-    public void createFrameBuffer()
-    {
-        FBO = glGenFramebuffers();
-        colorTexture = glGenTextures();
-        depthBuffer = glGenRenderbuffers();
-
-        glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-
-        glBindTexture(GL_TEXTURE_2D, colorTexture);
-
-        int farbformat;
-        switch (farben)
-        {
-            case SCHWARZ_WEISS -> farbformat = GL_RED;
-            case RGB -> farbformat = GL_RGB;
-            case BGR -> farbformat = GL_BGR;
-            default -> farbformat = GL_RGB;
-        }
-        glTexImage2D(GL_TEXTURE_2D, 0, farbformat, width, height, 0, farbformat, GL_UNSIGNED_BYTE, 0);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
-
-        glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
-        glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        data = new byte[imageSize + sensorInfoSize];
+        data[0] = 10;
+        ConstValues.intToByteArray(width, 1, data);
+        ConstValues.intToByteArray(height, 5, data);
     }
 
     void createPBO()
     {
+        imageSize = width*height*renderTarget.byteProPixel();
+
         PBO = glGenBuffers();
         glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO);
-        glBufferData(GL_PIXEL_PACK_BUFFER, width*height*byteProPixel(), GL_STREAM_READ);
+        glBufferData(GL_PIXEL_PACK_BUFFER, imageSize, GL_STREAM_READ);
     }
 
     public void zerstoeren()
@@ -77,48 +58,44 @@ public class Zwei_D_Kamera extends Sensor{
 
     }
 
-    int byteProPixel()
+    private void sendImage()
     {
-        switch (farben)
-        {
-            case SCHWARZ_WEISS:
-                return 1;
-            case RGB:
-                return 3;
-            case BGR:
-                return 3;
-            default:
-                return 3;
-        }
+        Schnittstelle schnittstelle = Schnittstelle.getInstance();
+        schnittstelle.senden(data);
     }
 
+    Vector3f tmp = new Vector3f();
     @Override
     public void ausfuehren(float vergangeneZeit)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-        glViewport(0,0, width, height);
+        tmp.x = 2;
+        tmp.y = 10;
+        tmp.z = 0.5f;
 
-        glClearColor(0,0.5f,1,1);
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        kamera.position.set(tmp);
+        tmp.x = 2;
+        tmp.y = 0;
+        tmp.z = 1;
+        kamera.lookAt.set(tmp);
+        kamera.updateMatrix();
 
+        kamera.updateMatrix();
 
-
-        //glUniform3f(uniformID, val, 0,0);
-
-        //draw all
-
+        Renderer renderer = Renderer.getInstance();
+        renderer.setKamera(kamera);
+        umgebung.draw();
         glFlush();
 
         //read
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, renderTarget.framebuffer);
         glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO);
-        glReadPixels(0,0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glReadPixels(0,0, width, height, renderTarget.getOpenGlFormat(), GL_UNSIGNED_BYTE, 0);
 
         ByteBuffer byteBuffer = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
-        byteBuffer.get(data);
+        byteBuffer.get(data, sensorInfoSize, imageSize);
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 
-        Schnittstelle.getInstance();
+        sendImage();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

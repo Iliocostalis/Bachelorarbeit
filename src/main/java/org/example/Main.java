@@ -14,5 +14,7 @@ public class Main {
         {
             fenster.update();
         }
+
+        Schnittstelle.getInstance().stop();
     }
 }

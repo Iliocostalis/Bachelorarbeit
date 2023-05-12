@@ -10,10 +10,14 @@ public class Umgebung {
     public ArrayList<Objekt> objekte = new ArrayList<>();
     public Kamera kamera;
 
+    private Zwei_D_Kamera zwei_d_kamera;
+
     Umgebung()
     {
         RenderTarget renderTarget = new RenderTarget(720, 480, 0, RENDER_TARGET_COLOR_FORMAT.RGBA);
         kamera = new Kamera(renderTarget);
+
+        zwei_d_kamera = new Zwei_D_Kamera(this);
 
         /*
         Objekt objekt = new Objekt();
@@ -42,19 +46,28 @@ public class Umgebung {
     public void aktualisieren()
     {
         auto.move();
+        zwei_d_kamera.ausfuehren(0f);
     }
 
     Vector3f tmp = new Vector3f();
+
+    public void draw()
+    {
+        Renderer renderer = Renderer.getInstance();
+
+        for (Objekt o : objekte) {
+            renderer.draw(o);
+        }
+        renderer.draw(auto);
+    }
+
     public void visualisieren()
     {
         Renderer renderer = Renderer.getInstance();
 
-        //kamera.transformation.position.x += 0.001f;
-        //if(kamera.transformation.position.x > 4)
-        //    kamera.transformation.position.x -= 4;
         tmp.x = 2;
-        tmp.y = 6;
-        tmp.z = -3;
+        tmp.y = 10;
+        tmp.z = 0.5f;
 
         kamera.position.set(tmp);
         tmp.x = 2;
@@ -65,10 +78,6 @@ public class Umgebung {
 
         renderer.setKamera(kamera);
 
-        for (Objekt o : objekte) {
-            renderer.draw(o);
-        }
-
-        renderer.draw(auto);
+        draw();
     }
 }

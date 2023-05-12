@@ -7,6 +7,7 @@ import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 public class Transformation {
     private Vector3f position;
@@ -19,8 +20,11 @@ public class Transformation {
 
     private boolean gotModified;
 
+    private ArrayList<Listener> listeners;
+
     public Transformation()
     {
+        listeners = new ArrayList<>();
         position = new Vector3f();
         quaternion = new Quaternionf();
         scale = 1f;
@@ -31,6 +35,7 @@ public class Transformation {
 
     public Transformation(JsonObjektInstance jsonObjektInstance)
     {
+        listeners = new ArrayList<>();
         position = new Vector3f(jsonObjektInstance.position[0], jsonObjektInstance.position[1], jsonObjektInstance.position[2]);
         quaternion = new Quaternionf();
         quaternion.rotationXYZ(jsonObjektInstance.rotation[0] * ConstValues.DEGREES_TO_RADIANS, jsonObjektInstance.rotation[1] * ConstValues.DEGREES_TO_RADIANS, jsonObjektInstance.rotation[2] * ConstValues.DEGREES_TO_RADIANS);
@@ -59,6 +64,7 @@ public class Transformation {
     {
         gotModified = true;
         this.position.set(position);
+        notifyListeners();
     }
 
     public float getScale()
@@ -70,6 +76,7 @@ public class Transformation {
     {
         gotModified = true;
         this.scale = scale;
+        notifyListeners();
     }
 
     public void getQuaternion(Quaternionf out)
@@ -81,6 +88,7 @@ public class Transformation {
     {
         gotModified = true;
         this.quaternion.set(quaternion);
+        notifyListeners();
     }
 
     public FloatBuffer getMatrix()
@@ -88,5 +96,22 @@ public class Transformation {
         if(gotModified)
             calculateMatrix();
         return matrixBuffer;
+    }
+
+    private void notifyListeners()
+    {
+        for (Listener listener : listeners) {
+            listener.notifyListener();
+        }
+    }
+
+    public void addModifiedListener(Listener listener)
+    {
+        listeners.add(listener);
+    }
+
+    public void removeModifiedListener(Listener listener)
+    {
+        listeners.remove(listener);
     }
 }
