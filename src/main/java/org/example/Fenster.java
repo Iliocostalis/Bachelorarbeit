@@ -45,9 +45,9 @@ public class Fenster {
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 
             if(key == GLFW_KEY_D && action == GLFW_PRESS)
-                Auto.rotationS = -40f;
+                Auto.rotationS = -90f;
             if(key == GLFW_KEY_A && action == GLFW_PRESS)
-                Auto.rotationS = 40f;
+                Auto.rotationS = 90f;
             if(action == GLFW_RELEASE)
                 Auto.rotationS = 0f;
         });

@@ -66,8 +66,8 @@ public class Umgebung {
         Renderer renderer = Renderer.getInstance();
 
         tmp.x = 2;
-        tmp.y = 10;
-        tmp.z = 0.5f;
+        tmp.y = 4;
+        tmp.z = -3;
 
         kamera.position.set(tmp);
         tmp.x = 2;
