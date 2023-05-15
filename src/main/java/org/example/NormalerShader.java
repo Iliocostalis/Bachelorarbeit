@@ -13,6 +13,7 @@ public class NormalerShader implements Shader{
 
     String vertexShaderSource = "#version 460 core\n" +
             "layout (location = 0) in vec3 aPos;\n"+
+            "layout (location = 1) in vec3 aNormals;\n"+
             "layout(location = 0) uniform mat4 projection;\n"+
             "layout(location = 1) uniform mat4 view;\n"+
             "layout(location = 2) uniform mat4 model;\n"+

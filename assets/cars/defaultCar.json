@@ -1,7 +1,7 @@
 {
     "name": "default_car",
     "mesh_name": "blender_car",
-    "car_length": 2,
+    "car_length": 0.5,
     "lenkwinkel": 40,
     "sensors": [
         {"name": "default_sensor", "position": [0,0,0], "rotation": [0,0,0]}

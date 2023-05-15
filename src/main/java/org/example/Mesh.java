@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL40;
 public class Mesh {
     private ShaderTyp shaderTyp;
     private int VBO;
+    private int VBONormals;
     private int VBOTexture;
     private int VAO;
     private int vertexCount;
@@ -17,25 +18,25 @@ public class Mesh {
 
     Mesh(JsonMesh jsonMesh)
     {
-        this(jsonMesh.vertex, jsonMesh.texture, jsonMesh.texturePath);
+        this(jsonMesh.vertex, jsonMesh.normal, jsonMesh.texture, jsonMesh.texturePath);
     }
 
-    Mesh(float[] positionen, float[] texturKoordinaten, String texturePath)
+    Mesh(float[] positionen, float[] normals, float[] texturKoordinaten, String texturePath)
     {
         boolean hasTexture = texturKoordinaten.length > 0 && !texturePath.equals("");
 
         if(hasTexture)
-            generateMesh(positionen, texturKoordinaten, TextureLoader.getInstance().loadTexture(texturePath));
+            generateMesh(positionen, normals, texturKoordinaten, TextureLoader.getInstance().loadTexture(texturePath));
         else
-            generateMesh(positionen, null, 0);
+            generateMesh(positionen, normals, null, 0);
     }
 
-    Mesh(float[] positionen, float[] texturKoordinaten, int textureId)
+    Mesh(float[] positionen, float[] normals, float[] texturKoordinaten, int textureId)
     {
-        generateMesh(positionen, texturKoordinaten, textureId);
+        generateMesh(positionen, normals, texturKoordinaten, textureId);
     }
 
-    private void generateMesh(float[] positionen, float[] texturKoordinaten, int textureId)
+    private void generateMesh(float[] positionen, float[] normals, float[] texturKoordinaten, int textureId)
     {
         // calculate size
         float xMin = Float.MAX_VALUE;
@@ -74,6 +75,13 @@ public class Mesh {
         GL40.glVertexAttribPointer(0, 3, GL40.GL_FLOAT, false, 3 * Float.BYTES, 0);
         GL40.glEnableVertexAttribArray(0);
 
+        VBONormals = GL40.glGenBuffers();
+        GL40.glBindBuffer(GL40.GL_ARRAY_BUFFER, VBONormals);
+        GL40.glBufferData(GL40.GL_ARRAY_BUFFER, normals, GL40.GL_STATIC_DRAW);
+
+        GL40.glVertexAttribPointer(1, 3, GL40.GL_FLOAT, false, 3 * Float.BYTES, 0);
+        GL40.glEnableVertexAttribArray(1);
+
         if(texturKoordinaten == null)
         {
             shaderTyp = ShaderTyp.NORMAL;
@@ -87,8 +95,8 @@ public class Mesh {
             GL40.glBindBuffer(GL40.GL_ARRAY_BUFFER, VBOTexture);
             GL40.glBufferData(GL40.GL_ARRAY_BUFFER, texturKoordinaten, GL40.GL_STATIC_DRAW);
 
-            GL40.glVertexAttribPointer(1, 2, GL40.GL_FLOAT, false, 2 * Float.BYTES, 0);
-            GL40.glEnableVertexAttribArray(1);
+            GL40.glVertexAttribPointer(2, 2, GL40.GL_FLOAT, false, 2 * Float.BYTES, 0);
+            GL40.glEnableVertexAttribArray(2);
         }
 
         GL40.glBindVertexArray(0);

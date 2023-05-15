@@ -26,7 +26,7 @@ public class Auto extends Objekt implements Listener{
     float rotation = (float)Math.toRadians(20);
 
     static float rotationS = 0;
-    float length = 0.5f;
+    float length;
 
     private boolean skipTransformationUpdate;
 
@@ -42,7 +42,39 @@ public class Auto extends Objekt implements Listener{
 
         float scale = length / vector3fTmp.x;
         transformation.setScale(scale);
+
+        measureSpeedDif();
     }
+
+    private void measureSpeedDif()
+    {
+        Vector3f pos = new Vector3f(1,0,0);
+        Quaternionf rot = new Quaternionf();
+
+        Vector3f posStart = new Vector3f(1,0,0);
+        Quaternionf rotStart = new Quaternionf();
+
+        transformation.getPosition(posStart);
+        transformation.getQuaternion(rotStart);
+        transformation.getPosition(pos);
+        transformation.getQuaternion(rot);
+
+        for(int l = 0; l < 2; l++)
+        {
+            rotationS = l*40;
+
+            move();
+
+            transformation.getPosition(vector3fTmp);
+
+            float distanceNormal = vector3fTmp.distance(pos) * 1000;
+            System.out.println(distanceNormal);
+
+            transformation.setPosition(posStart);
+            transformation.setQuaternion(rotStart);
+        }
+    }
+
     public void move()
     {
         skipTransformationUpdate = true;
@@ -56,10 +88,10 @@ public class Auto extends Objekt implements Listener{
         back.sub(vector3fTmp);
 
         // rotate direction
-        vector3fTmp.rotateY((float)Math.toRadians(rotationS), direction);
+        currentDirection.rotateY((float)Math.toRadians(rotationS), direction);
 
         // move front
-        front.add(direction.mul(0.002f));
+        front.add(direction.mul(0.00001f));
 
         // get new direction
         front.sub(back, direction);

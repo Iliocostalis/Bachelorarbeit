@@ -1,6 +1,7 @@
 {
     "name": "default_kurve",
     "vertex": [-1,0,-1, 1,0,-1, 1,0,1,    -1,0,-1, 1,0,1, -1,0,1],
+    "normal": [0,1,0, 0,1,0, 0,1,0,    0,1,0, 0,1,0, 0,1,0],
     "texture": [0,0, 1,0, 1,1,    0,0, 1,1, 0,1],
     "texturePath": "assets/images/kurve.png"
 }

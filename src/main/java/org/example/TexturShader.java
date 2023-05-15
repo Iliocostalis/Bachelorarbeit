@@ -13,27 +13,78 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 public class TexturShader implements Shader{
     String vertexShaderSource = "#version 460 core\n" +
             "layout (location = 0) in vec3 aPos;\n"+
-            "layout (location = 1) in vec2 aTex;\n"+
+            "layout (location = 1) in vec3 aNormals;\n"+
+            "layout (location = 2) in vec2 aTex;\n"+
             "layout(location = 0) uniform mat4 projection;\n"+
             "layout(location = 1) uniform mat4 view;\n"+
             "layout(location = 2) uniform mat4 model;\n"+
             "out vec2 TexCoord;\n"+
+            "out vec3 Normals;\n"+
+            "out vec3 Pos;\n"+
             "void main()\n"+
             "{\n"+
             "   gl_Position = projection * view * model * vec4(aPos, 1.0);\n"+
+            "   Pos = vec3(model * vec4(aPos, 1.0));\n"+
+            "   Normals = aNormals;\n"+
             "   TexCoord = aTex;\n"+
             "}";
 
     String fragmentShaderSource = "#version 460 core\n" +
             "in vec2 TexCoord;\n"+
+            "in vec3 Normals;\n"+
+            "in vec3 Pos;\n"+
             "out vec4 FragColor;\n" +
             "uniform sampler2D ourTexture;\n" +
             "\n" +
             "void main()\n" +
             "{\n" +
-            "    FragColor = texture(ourTexture, TexCoord);\n" +
+            "   vec3 lightPos = vec3(0.0, 10000, 0.0);\n"+
+            "   vec3 lightDir = normalize(lightPos - Pos);\n"+
+            "   float diff = max(dot(Normals, lightDir), 0.0);\n"+
+            "   float diffuseScale = 0.7;\n"+
+            "   float ambientStrength = 0.3;\n"+
+            "   float brightness = diff * diffuseScale + ambientStrength;\n"+
+            "   FragColor = brightness * texture(ourTexture, TexCoord);\n" +
             "} ";
 
+
+
+
+    String vertexShaderSourceo = "#version 460 core\n" +
+            "layout (location = 0) in vec3 aPos;\n"+
+            "layout (location = 1) in vec3 aNormals;\n"+
+            "layout (location = 2) in vec2 aTex;\n"+
+            "layout(location = 0) uniform mat4 projection;\n"+
+            "layout(location = 1) uniform mat4 view;\n"+
+            "layout(location = 2) uniform mat4 model;\n"+
+            "out vec2 TexCoord;\n"+
+            "out vec3 Brightness;\n"+
+            "void main()\n"+
+            "{\n"+
+            "   gl_Position = projection * view * model * vec4(aPos, 1.0);\n"+
+            "   vec3 vertexPos = vec3(model * vec4(aPos, 1.0));\n"+
+            "   vec3 lightPos = vec3(0.0, 10000, 0.0);\n"+
+            "   vec3 lightDir = normalize(lightPos - vertexPos);\n"+
+            "   float diff = max(dot(aNormals, lightDir), 0.0);\n"+
+            "   vec3 lightColor = vec3(1.0, 1.0, 1.0);\n"+
+            "   float diffuseScale = 0.7;\n"+
+            "   vec3 diffuse = diffuseScale * diff * lightColor;\n"+
+            "   float ambientStrength = 0.3;\n"+
+            "   vec3 ambient = ambientStrength * lightColor;\n"+
+            "   Brightness = ambient + diffuse;\n"+
+            "   TexCoord = aTex;\n"+
+            "}";
+
+    String fragmentShaderSourceo = "#version 460 core\n" +
+            "in vec2 TexCoord;\n"+
+            "in vec3 Brightness;\n"+
+            "out vec4 FragColor;\n" +
+            "uniform sampler2D ourTexture;\n" +
+            "\n" +
+            "void main()\n" +
+            "{\n" +
+            "   FragColor = vec4(Brightness, 1.0) * texture(ourTexture, TexCoord);\n" +
+            "} ";
     int shaderProgram;
 
     TexturShader() {
