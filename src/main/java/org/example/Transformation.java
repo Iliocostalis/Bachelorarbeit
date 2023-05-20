@@ -1,9 +1,7 @@
 package org.example;
 
 import org.example.assets.JsonObjektInstance;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.joml.*;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -16,8 +14,6 @@ public class Transformation {
     private float scale;
     private Matrix4f matrix;
 
-    private FloatBuffer matrixBuffer;
-
     private boolean gotModified;
 
     private ArrayList<Listener> listeners;
@@ -29,7 +25,6 @@ public class Transformation {
         quaternion = new Quaternionf();
         scale = 1f;
         matrix = new Matrix4f();
-        matrixBuffer = BufferUtils.createFloatBuffer(16);
         gotModified = true;
     }
 
@@ -41,7 +36,6 @@ public class Transformation {
         quaternion.rotationXYZ(jsonObjektInstance.rotation[0] * ConstValues.DEGREES_TO_RADIANS, jsonObjektInstance.rotation[1] * ConstValues.DEGREES_TO_RADIANS, jsonObjektInstance.rotation[2] * ConstValues.DEGREES_TO_RADIANS);
         scale = 1f;
         matrix = new Matrix4f();
-        matrixBuffer = BufferUtils.createFloatBuffer(16);
         gotModified = true;
     }
 
@@ -51,13 +45,12 @@ public class Transformation {
         matrix.translate(position);
         matrix.rotate(quaternion);
         matrix.scale(scale);
-        matrix.get(matrixBuffer);
         gotModified = false;
     }
 
-    public void getPosition(Vector3f out)
+    public Vector3fc getPosition()
     {
-        out.set(position);
+        return position;
     }
 
     public void setPosition(Vector3f position)
@@ -79,9 +72,9 @@ public class Transformation {
         notifyListeners();
     }
 
-    public void getQuaternion(Quaternionf out)
+    public Quaternionfc getQuaternion()
     {
-        out.set(quaternion);
+        return quaternion;
     }
 
     public void setQuaternion(Quaternionf quaternion)
@@ -91,11 +84,12 @@ public class Transformation {
         notifyListeners();
     }
 
-    public FloatBuffer getMatrix()
+    public Matrix4fc getMatrix()
     {
         if(gotModified)
             calculateMatrix();
-        return matrixBuffer;
+
+        return matrix;
     }
 
     private void notifyListeners()

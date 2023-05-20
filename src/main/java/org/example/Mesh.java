@@ -16,6 +16,10 @@ public class Mesh {
 
     private int textureId;
 
+    public final float[] vertices;
+    public final float[] normals;
+    public final float[] textures;
+
     Mesh(JsonMesh jsonMesh)
     {
         this(jsonMesh.vertex, jsonMesh.normal, jsonMesh.texture, jsonMesh.texturePath);
@@ -23,16 +27,25 @@ public class Mesh {
 
     Mesh(float[] positionen, float[] normals, float[] texturKoordinaten, String texturePath)
     {
+        this.vertices = positionen.clone();
+        this.normals = normals.clone();
+        this.textures = texturKoordinaten.clone();
+
         boolean hasTexture = texturKoordinaten.length > 0 && !texturePath.equals("");
 
         if(hasTexture)
             generateMesh(positionen, normals, texturKoordinaten, TextureLoader.getInstance().loadTexture(texturePath));
         else
             generateMesh(positionen, normals, null, 0);
+
     }
 
     Mesh(float[] positionen, float[] normals, float[] texturKoordinaten, int textureId)
     {
+        this.vertices = positionen.clone();
+        this.normals = normals.clone();
+        this.textures = texturKoordinaten.clone();
+
         generateMesh(positionen, normals, texturKoordinaten, textureId);
     }
 

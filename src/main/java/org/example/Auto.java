@@ -44,6 +44,8 @@ public class Auto extends Objekt implements Listener{
         transformation.setScale(scale);
 
         measureSpeedDif();
+
+        isRayIntersecting(new Vector3f(0.0f,0.2f,-10), new Vector3f(0,0,1));
     }
 
     private void measureSpeedDif()
@@ -54,10 +56,10 @@ public class Auto extends Objekt implements Listener{
         Vector3f posStart = new Vector3f(1,0,0);
         Quaternionf rotStart = new Quaternionf();
 
-        transformation.getPosition(posStart);
-        transformation.getQuaternion(rotStart);
-        transformation.getPosition(pos);
-        transformation.getQuaternion(rot);
+        posStart.set(transformation.getPosition());
+        rotStart.set(transformation.getQuaternion());
+        pos.set(transformation.getPosition());
+        rot.set(transformation.getQuaternion());
 
         for(int l = 0; l < 2; l++)
         {
@@ -65,7 +67,7 @@ public class Auto extends Objekt implements Listener{
 
             move();
 
-            transformation.getPosition(vector3fTmp);
+            vector3fTmp.set(transformation.getPosition());
 
             float distanceNormal = vector3fTmp.distance(pos) * 1000;
             System.out.println(distanceNormal);
@@ -82,16 +84,19 @@ public class Auto extends Objekt implements Listener{
         //calculate front /back from direction and position
         currentDirection.mul(length*0.5f, vector3fTmp);
 
-        transformation.getPosition(front);
-        front.add(vector3fTmp);
-        transformation.getPosition(back);
-        back.sub(vector3fTmp);
+        transformation.getPosition().add(vector3fTmp, front);
+        transformation.getPosition().sub(vector3fTmp, back);
+
+        //transformation.getPosition(front);
+        //front.add(vector3fTmp);
+        //transformation.getPosition(back);
+        //back.sub(vector3fTmp);
 
         // rotate direction
         currentDirection.rotateY((float)Math.toRadians(rotationS), direction);
 
         // move front
-        front.add(direction.mul(0.00001f));
+        front.add(direction.mul(0.001f));
 
         // get new direction
         front.sub(back, direction);
@@ -120,8 +125,7 @@ public class Auto extends Objekt implements Listener{
         if(skipTransformationUpdate)
             return;
 
-        transformation.getQuaternion(quaternionTmp);
-        directionFront.rotate(quaternionTmp, vector3fTmp);
+        directionFront.rotate(transformation.getQuaternion(), vector3fTmp);
         currentDirection.set(vector3fTmp);
     }
 }

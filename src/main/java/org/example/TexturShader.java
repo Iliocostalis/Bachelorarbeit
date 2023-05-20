@@ -87,7 +87,11 @@ public class TexturShader implements Shader{
             "} ";
     int shaderProgram;
 
+    private FloatBuffer matrixBuffer;
+
     TexturShader() {
+        matrixBuffer = BufferUtils.createFloatBuffer(16);
+
         int vertexShader;
         vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, vertexShaderSource);
@@ -142,8 +146,10 @@ public class TexturShader implements Shader{
     public void draw(Objekt objekt, Mesh mesh) {
         glUseProgram(shaderProgram);
 
+        objekt.transformation.getMatrix().get(matrixBuffer);
+
         glBindVertexArray(mesh.getVAO());
-        glUniformMatrix4fv(2, false, objekt.transformation.getMatrix());
+        glUniformMatrix4fv(2, false, matrixBuffer);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, mesh.getTextureId());
         glDrawArrays(GL_TRIANGLES, 0, mesh.getVertexCount());

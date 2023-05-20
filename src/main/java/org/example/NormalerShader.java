@@ -35,7 +35,11 @@ public class NormalerShader implements Shader{
 
     int shaderProgram;
 
+    private FloatBuffer matrixBuffer;
+
     NormalerShader() {
+        matrixBuffer = BufferUtils.createFloatBuffer(16);
+
         int vertexShader;
         vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, vertexShaderSource);
@@ -89,8 +93,10 @@ public class NormalerShader implements Shader{
     public void draw(Objekt objekt, Mesh mesh) {
         glUseProgram(shaderProgram);
 
+        objekt.transformation.getMatrix().get(matrixBuffer);
+
         glBindVertexArray(mesh.getVAO());
-        glUniformMatrix4fv(2, false, objekt.transformation.getMatrix());
+        glUniformMatrix4fv(2, false, matrixBuffer);
         glDrawArrays(GL_TRIANGLES, 0, mesh.getVertexCount());
     }
 }
