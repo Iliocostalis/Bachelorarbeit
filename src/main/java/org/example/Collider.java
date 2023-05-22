@@ -1,7 +1,9 @@
 package org.example;
 
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class Collider implements Listener {
 
@@ -12,11 +14,10 @@ public class Collider implements Listener {
     Vector3f vector3fTmp4;
     Vector3f vector3fTmp5;
     Vector3f vector3fTmp6;
+
+    Vector3f intersectingPosition;
+
     Objekt objekt;
-
-    Vector3f boundingSphereCenter;
-
-    float boundingSphereRadius;
 
     Vector3f boundingBoxMin;
     Vector3f boundingBoxMax;
@@ -33,12 +34,11 @@ public class Collider implements Listener {
         vector3fTmp4 = new Vector3f();
         vector3fTmp5 = new Vector3f();
         vector3fTmp6 = new Vector3f();
+        intersectingPosition = new Vector3f();
         boundingBoxMin = new Vector3f();
         boundingBoxMax = new Vector3f();
 
         objekt.transformation.addModifiedListener(this);
-
-
     }
 
 
@@ -93,31 +93,87 @@ public class Collider implements Listener {
         //rayDirection.set(0,0,1);
 
 
-        vector3fTmp.set(1,1,1);
-        vector3fTmp.div(rayDirection);
+        Matrix4f matrix4f = VectorMatrixPool.getMatrix4f();
+
+        objekt.transformation.getMatrix().get(matrix4f);
+
+        matrix4f.invert();
+
+        Matrix4f matrix4f1 = VectorMatrixPool.getMatrix4f();
+        Matrix4f matrix4f2 = VectorMatrixPool.getMatrix4f();
+        Matrix4f matrix4f3 = VectorMatrixPool.getMatrix4f();
+        Matrix4f matrix4f4 = VectorMatrixPool.getMatrix4f();
+
+        Quaternionf quaternionf = VectorMatrixPool.getQuaternionf();
+
+        matrix4f1.identity();
+        matrix4f1.translate(10,0,0);
+        matrix4f1.invert(matrix4f2);
+
+        matrix4f3.identity();
+        matrix4f3.scale(10,1,1);
+        matrix4f3.invert(matrix4f4);
+
+
+
+        quaternionf.identity();
+        quaternionf.rotateY(ConstValues.DEGREES_TO_RADIANS * 45f);
+
+        matrix4f1.identity();
+        matrix4f1.translate(10,0,0);
+        matrix4f1.rotate(quaternionf);
+        matrix4f1.scale(2);
+
+        matrix4f1.invert(matrix4f2);
+
+        Vector3f pos = VectorMatrixPool.getVector3f();
+        Vector3f dir = VectorMatrixPool.getVector3f();
+        pos.set(0,0,0);
+        dir.set(1,0,0);
+
+        pos.mulPosition(matrix4f2);
+        dir.mulDirection(matrix4f2);
+
+
+
+
+        Vector3f rayDirectionInverse = VectorMatrixPool.getVector3f();
+
+        rayDirectionInverse.set(1,1,1);
+        rayDirectionInverse.div(rayDirection);
 
         //box b, ray r
-        float tx1 = (boundingBoxMin.x - rayOrigin.x)*vector3fTmp.x;
-        float tx2 = (boundingBoxMax.x - rayOrigin.x)*vector3fTmp.x;
+        float tx1 = (boundingBoxMin.x - rayOrigin.x)*rayDirectionInverse.x;
+        float tx2 = (boundingBoxMax.x - rayOrigin.x)*rayDirectionInverse.x;
 
         float tmin = Math.min(tx1, tx2);
         float tmax = Math.max(tx1, tx2);
 
-        float ty1 = (boundingBoxMin.y - rayOrigin.y)*vector3fTmp.y;
-        float ty2 = (boundingBoxMax.y - rayOrigin.y)*vector3fTmp.y;
+        float ty1 = (boundingBoxMin.y - rayOrigin.y)*rayDirectionInverse.y;
+        float ty2 = (boundingBoxMax.y - rayOrigin.y)*rayDirectionInverse.y;
 
         tmin = Math.max(tmin, Math.min(ty1, ty2));
         tmax = Math.min(tmax, Math.max(ty1, ty2));
 
-        float tz1 = (boundingBoxMin.z - rayOrigin.z)*vector3fTmp.z;
-        float tz2 = (boundingBoxMax.z - rayOrigin.z)*vector3fTmp.z;
+        float tz1 = (boundingBoxMin.z - rayOrigin.z)*rayDirectionInverse.z;
+        float tz2 = (boundingBoxMax.z - rayOrigin.z)*rayDirectionInverse.z;
 
         tmin = Math.max(tmin, Math.min(tz1, tz2));
         tmax = Math.min(tmax, Math.max(tz1, tz2));
 
         boolean hit = tmax >= Math.max(0.0, tmin) && tmin >= 0;
         if(hit)
-            return exactCollision(rayOrigin, rayDirection);
+        {
+            Vector3f rayOriginTransformed = VectorMatrixPool.getVector3f();
+            Vector3f rayDirectionTransformed = VectorMatrixPool.getVector3f();
+
+            rayOriginTransformed.set(rayOrigin);
+            rayOriginTransformed.mulPosition(matrix4f2);
+            rayDirectionTransformed.set(rayDirection);
+            rayDirectionTransformed.mulDirection(matrix4f2);
+
+            return exactCollision(rayOriginTransformed, rayDirectionTransformed);
+        }
 
         return false;
     }
@@ -185,8 +241,7 @@ public class Collider implements Listener {
 
             // compute the intersection point using equation 1
             ///Vec3f P = orig + t * dir;
-            Vector3f point = vector3fTmp5;
-            rayDirection.mulAdd(t, rayOrigin, point);
+            rayDirection.mulAdd(t, rayOrigin, intersectingPosition);
 
             // Step 2: inside-outside test
             ///Vec3f C; // vector perpendicular to triangle's plane
@@ -197,7 +252,7 @@ public class Collider implements Listener {
             ///C = edge0.crossProduct(vp0);
             ///if (N.dotProduct(C) < 0) return false; // P is on the right side
             v1.sub(v0, vector3fTmp);
-            point.sub(v0, vector3fTmp6);
+            intersectingPosition.sub(v0, vector3fTmp6);
             vector3fTmp.cross(vector3fTmp6);
             if(normal.dot(vector3fTmp) < 0)
                 continue;
@@ -209,7 +264,7 @@ public class Collider implements Listener {
             ///C = edge1.crossProduct(vp1);
             ///if (N.dotProduct(C) < 0)  return false; // P is on the right side
             v2.sub(v1, vector3fTmp);
-            point.sub(v1, vector3fTmp6);
+            intersectingPosition.sub(v1, vector3fTmp6);
             vector3fTmp.cross(vector3fTmp6);
             if(normal.dot(vector3fTmp) < 0)
                 continue;
@@ -220,7 +275,7 @@ public class Collider implements Listener {
             ///C = edge2.crossProduct(vp2);
             ///if (N.dotProduct(C) < 0) return false; // P is on the right side;
             v0.sub(v2, vector3fTmp);
-            point.sub(v2, vector3fTmp6);
+            intersectingPosition.sub(v2, vector3fTmp6);
             vector3fTmp.cross(vector3fTmp6);
             if(normal.dot(vector3fTmp) < 0)
                 continue;
@@ -231,9 +286,9 @@ public class Collider implements Listener {
         return false;
     }
 
-    public void getIntersectionPosition(Vector3f out)
+    public Vector3fc getIntersectionPosition()
     {
-
+        return intersectingPosition;
     }
 
     private void calculateBoundingSphere()
@@ -261,6 +316,10 @@ public class Collider implements Listener {
             boundingBoxMax.y = Math.max(boundingBoxMax.y, vector3fTmp.y);
             boundingBoxMax.z = Math.max(boundingBoxMax.z, vector3fTmp.z);
         }
+
+        float border = 0.001f;
+        boundingBoxMin.sub(border, border, border);
+        boundingBoxMax.add(border, border, border);
     }
 
     @Override

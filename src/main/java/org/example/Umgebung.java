@@ -1,6 +1,8 @@
 package org.example;
 
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
+
 import java.util.ArrayList;
 
 public class Umgebung {
@@ -11,6 +13,7 @@ public class Umgebung {
     public Kamera kamera;
 
     private Zwei_D_Kamera zwei_d_kamera;
+    private DistanceSensor distanceSensor;
 
     Umgebung()
     {
@@ -18,6 +21,7 @@ public class Umgebung {
         kamera = new Kamera(renderTarget);
 
         zwei_d_kamera = new Zwei_D_Kamera(this);
+        distanceSensor = new DistanceSensor(this);
 
         /*
         Objekt objekt = new Objekt();
@@ -45,8 +49,10 @@ public class Umgebung {
 
     public void aktualisieren()
     {
+        VectorMatrixPool.returnAll();
         auto.move();
         zwei_d_kamera.ausfuehren(0f);
+        distanceSensor.ausfuehren(0f);
     }
 
     Vector3f tmp = new Vector3f();
@@ -79,5 +85,34 @@ public class Umgebung {
         renderer.setKamera(kamera);
 
         draw();
+    }
+
+    public void getRayIntersection(Vector3f rayOrigin, Vector3f rayDirection, float maxDistance, Vector3f outPosition)
+    {
+        Vector3f rayDirectionNormalized = VectorMatrixPool.getVector3f();
+        Vector3f intersection = VectorMatrixPool.getVector3f();
+        Vector3f intersectionOffset = VectorMatrixPool.getVector3f();
+
+        rayDirection.normalize(rayDirectionNormalized);
+
+        rayDirectionNormalized.mulAdd(maxDistance, rayOrigin, outPosition);
+
+        float distanceSquared = maxDistance * maxDistance;
+
+        for (Objekt o : objekte) {
+            boolean intersecting = o.isRayIntersecting(rayOrigin, rayDirection);
+            if(intersecting)
+            {
+                intersection.set(o.getRayIntersectionPosition());
+                intersection.sub(rayOrigin, intersectionOffset);
+
+                float distance = intersection.lengthSquared();
+                if(distance < distanceSquared)
+                {
+                    distanceSquared = distance;
+                    outPosition.set(intersection);
+                }
+            }
+        }
     }
 }

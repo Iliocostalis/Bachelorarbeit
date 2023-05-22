@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -59,6 +60,8 @@ public class Schnittstelle {
                 inputStream = clientSocket.getInputStream();
                 isRunning.set(true);
                 runSenden();
+            } catch (SocketException e) {
+                return;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

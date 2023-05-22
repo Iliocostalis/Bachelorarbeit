@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.assets.JsonObjektInstance;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class Objekt {
     public Transformation transformation;
@@ -20,5 +21,10 @@ public class Objekt {
     public boolean isRayIntersecting(Vector3f rayOrigin, Vector3f rayDirection)
     {
         return collider.isRayIntersecting(rayOrigin, rayDirection);
+    }
+
+    public Vector3fc getRayIntersectionPosition()
+    {
+        return collider.getIntersectionPosition();
     }
 }

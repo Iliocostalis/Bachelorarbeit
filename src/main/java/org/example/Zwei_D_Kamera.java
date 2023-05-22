@@ -31,7 +31,8 @@ public class Zwei_D_Kamera extends Sensor{
 
     public Zwei_D_Kamera(Umgebung umgebung)
     {
-        this.umgebung = umgebung;
+        super(umgebung);
+
         width = 300;
         height = 300;
         renderTarget = new RenderTarget(width, height, RENDER_TARGET_COLOR_FORMAT.RGB);
