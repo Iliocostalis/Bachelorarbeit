@@ -1,17 +1,24 @@
 package org.example;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
 
         Schnittstelle.getInstance().start();
 
         Fenster fenster = new Fenster();
         UmgebungsLader.load();
-        Umgebung.umgebung = UmgebungsLader.getEnviroment("start_settings");
+        Umgebung.umgebung = UmgebungsLader.getEnviroment("blender");
 
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while(fenster.istOffen())
         {
+            UserCommandOperator.update(reader);
             fenster.update();
         }
 

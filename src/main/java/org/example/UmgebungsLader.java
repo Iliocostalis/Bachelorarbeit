@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.lwjgl.opengl.GL11.glFlush;
+
 public class UmgebungsLader {
 
 
@@ -94,20 +96,47 @@ public class UmgebungsLader {
 
     public static Umgebung getEnviroment(String scene)
     {
-        Umgebung umgebung = new Umgebung();
+        Umgebung umgebung = new Umgebung(scene);
 
         try {
             JsonScene jsonScene = scenes.get(scene);
+            if(jsonScene == null)
+            {
+                System.out.println("Can not read scene: " + scene);
+                return umgebung;
+            }
 
             JsonMap jsonMap = maps.get(jsonScene.enviroment);
+            if(jsonMap == null)
+            {
+                System.out.println("Can not read maps: " + jsonScene.enviroment);
+                return umgebung;
+            }
+
             JsonCar jsonCar = cars.get(jsonScene.car_instance.name);
+            if(jsonCar == null)
+            {
+                System.out.println("Can not read car: " + jsonScene.car_instance.name);
+                return umgebung;
+            }
+
             JsonMesh jsonCarObjekt = meshs.get(jsonCar.mesh_name);
+            if(jsonCarObjekt == null)
+            {
+                System.out.println("Can not read mesh: " + jsonCar.mesh_name);
+                return umgebung;
+            }
 
             umgebung.auto = new Auto(jsonCar, jsonScene.car_instance, loadMesh(jsonCarObjekt));
 
             for(JsonObjektInstance instance : jsonMap.objekts)
             {
                 JsonMesh jsonMesh = meshs.get(instance.name);
+                if(jsonMesh == null)
+                {
+                    System.out.println("Can not read mesh: " + instance.name);
+                    continue;
+                }
                 Objekt objekt = new Objekt(instance, loadMesh(jsonMesh));
                 umgebung.objekte.add(objekt);
             }
@@ -122,6 +151,24 @@ public class UmgebungsLader {
     public static Mesh getMesh(int hash)
     {
         return loadedMeshs.get(hash);
+    }
+
+    public static void reload()
+    {
+        glFlush();
+        scenes.clear();
+        maps.clear();
+        meshs.clear();
+        scenes.clear();
+        cars.clear();
+        sensors.clear();
+
+        for(Mesh mesh : loadedMeshs.values())
+            mesh.destroy();
+
+        loadedMeshs.clear();
+
+        load();
     }
 }
 

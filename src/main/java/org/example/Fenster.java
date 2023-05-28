@@ -86,6 +86,7 @@ public class Fenster {
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glFrontFace(GL_CCW);
+        glEnable(GL_FRAMEBUFFER_SRGB);
     }
 
     void update()
@@ -95,8 +96,15 @@ public class Fenster {
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
+
+        if(glfwWindowShouldClose(window))
+        {
+            schließen();
+            return;
+        }
+
         long time = System.currentTimeMillis();
-        while ( !glfwWindowShouldClose(window) ) {
+        //while ( !glfwWindowShouldClose(window) ) {
 
             Umgebung.umgebung.aktualisieren();
             Umgebung.umgebung.visualisieren();
@@ -108,13 +116,14 @@ public class Fenster {
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
-        }
+        //}
 
-        schließen();
+        //schließen();
     }
 
     void schließen()
     {
+        glFlush();
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
 

@@ -15,6 +15,8 @@ public class RenderTarget {
 
     RENDER_TARGET_COLOR_FORMAT farben;
 
+    private boolean createdResources;
+
     public RenderTarget(int width, int height, RENDER_TARGET_COLOR_FORMAT format)
     {
         this.width = width;
@@ -22,6 +24,7 @@ public class RenderTarget {
         this.farben = format;
 
         createFrameBuffer();
+        createdResources = true;
     }
 
     public RenderTarget(int width, int height, int framebufferId, RENDER_TARGET_COLOR_FORMAT format)
@@ -31,6 +34,7 @@ public class RenderTarget {
         this.farben = format;
 
         framebuffer = framebufferId;
+        createdResources = false;
     }
 
     public void createFrameBuffer()
@@ -109,5 +113,15 @@ public class RenderTarget {
     public int getHeight()
     {
         return height;
+    }
+
+    public void destroy()
+    {
+        if(createdResources)
+        {
+            glDeleteFramebuffers(framebuffer);
+            glDeleteTextures(colorTexture);
+            glDeleteRenderbuffers(depthBuffer);
+        }
     }
 }

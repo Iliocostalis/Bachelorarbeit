@@ -19,8 +19,6 @@ public class Zwei_D_Kamera extends Sensor{
     private final int sensorInfoSize = 9;
     private int imageSize;
 
-    Zwei_D_Kamera_Farben farben;
-
 
 
 
@@ -99,5 +97,10 @@ public class Zwei_D_Kamera extends Sensor{
         sendImage();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    @Override
+    public void destroy() {
+        renderTarget.destroy();
     }
 }

@@ -22,5 +22,13 @@ public class DistanceSensor extends Sensor {
         direction.rotate(rotation);
 
         Umgebung.umgebung.getRayIntersection(position, direction, 100f, pos);
+
+        pos.sub(position);
+        System.out.println(pos.length());
+    }
+
+    @Override
+    public void destroy() {
+
     }
 }

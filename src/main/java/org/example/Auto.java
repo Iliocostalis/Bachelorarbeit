@@ -11,7 +11,7 @@ public class Auto extends Objekt implements Listener{
 
     //Default direction -> X+
 
-    ArrayList<Sensor> sensoren;
+    ArrayList<Sensor> sensoren = new ArrayList<>();
     Vector3f back = new Vector3f(0,0.1f,0);
     Vector3f front = new Vector3f(1,0.1f,0);
 
@@ -96,7 +96,7 @@ public class Auto extends Objekt implements Listener{
         currentDirection.rotateY((float)Math.toRadians(rotationS), direction);
 
         // move front
-        front.add(direction.mul(0.001f));
+        front.add(direction.mul(0.1f));
 
         // get new direction
         front.sub(back, direction);
@@ -118,6 +118,12 @@ public class Auto extends Objekt implements Listener{
         transformation.setQuaternion(quaternionTmp);
 
         skipTransformationUpdate = false;
+    }
+
+    public void destroy()
+    {
+        for(Sensor sensor : sensoren)
+            sensor.destroy();
     }
 
     @Override

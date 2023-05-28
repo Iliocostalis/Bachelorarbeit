@@ -12,39 +12,40 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 public class TexturShader implements Shader{
     String vertexShaderSource = "#version 460 core\n" +
-            "layout (location = 0) in vec3 aPos;\n"+
-            "layout (location = 1) in vec3 aNormals;\n"+
-            "layout (location = 2) in vec2 aTex;\n"+
+            "layout (location = 0) in vec3 vPos;\n"+
+            "layout (location = 1) in vec3 vNormals;\n"+
+            "layout (location = 2) in vec2 vTex;\n"+
             "layout(location = 0) uniform mat4 projection;\n"+
             "layout(location = 1) uniform mat4 view;\n"+
             "layout(location = 2) uniform mat4 model;\n"+
-            "out vec2 TexCoord;\n"+
-            "out vec3 Normals;\n"+
-            "out vec3 Pos;\n"+
+            "out vec2 texCoord;\n"+
+            "out vec3 normals;\n"+
+            "out vec3 pos;\n"+
             "void main()\n"+
             "{\n"+
-            "   gl_Position = projection * view * model * vec4(aPos, 1.0);\n"+
-            "   Pos = vec3(model * vec4(aPos, 1.0));\n"+
-            "   Normals = aNormals;\n"+
-            "   TexCoord = aTex;\n"+
+            "   vec4 position = model * vec4(vPos, 1.0);\n"+
+            "   gl_Position = projection * view * position;\n"+
+            "   pos = vec3(position);\n"+
+            "   normals = vNormals;\n"+
+            "   texCoord = vTex;\n"+
             "}";
 
     String fragmentShaderSource = "#version 460 core\n" +
-            "in vec2 TexCoord;\n"+
-            "in vec3 Normals;\n"+
-            "in vec3 Pos;\n"+
+            "in vec2 texCoord;\n"+
+            "in vec3 normals;\n"+
+            "in vec3 pos;\n"+
             "out vec4 FragColor;\n" +
             "uniform sampler2D ourTexture;\n" +
             "\n" +
             "void main()\n" +
             "{\n" +
             "   vec3 lightPos = vec3(0.0, 10000, 0.0);\n"+
-            "   vec3 lightDir = normalize(lightPos - Pos);\n"+
-            "   float diff = max(dot(Normals, lightDir), 0.0);\n"+
+            "   vec3 lightDir = normalize(lightPos - pos);\n"+
+            "   float diff = max(dot(normals, lightDir), 0.0);\n"+
             "   float diffuseScale = 0.7;\n"+
             "   float ambientStrength = 0.3;\n"+
             "   float brightness = diff * diffuseScale + ambientStrength;\n"+
-            "   FragColor = brightness * texture(ourTexture, TexCoord);\n" +
+            "   FragColor = brightness * texture(ourTexture, texCoord);\n" +
             "} ";
 
 

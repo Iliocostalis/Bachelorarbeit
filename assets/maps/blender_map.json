@@ -1,0 +1,15 @@
+{
+  "name": "blender_map",
+  "objekts": [
+    {"name": "blender_Plane", "position": [-55.20,0.00,3.80], "rotation": [0.00,0.00,0.00]},
+    {"name": "blender_Plane.001", "position": [-55.20,0.00,56.25], "rotation": [0.00,0.00,0.00]},
+    {"name": "blender_Plane.002", "position": [49.70,0.00,56.25], "rotation": [-0.00,90.00,0.00]},
+    {"name": "blender_Plane.003", "position": [-2.75,0.00,56.25], "rotation": [-0.00,90.00,0.00]},
+    {"name": "blender_Plane.004", "position": [49.70,0.00,3.80], "rotation": [0.00,0.00,0.00]},
+    {"name": "blender_Plane.005", "position": [49.70,0.00,-48.65], "rotation": [-0.00,180.00,0.00]},
+    {"name": "blender_Plane.006", "position": [-2.75,0.00,-48.65], "rotation": [-0.00,90.00,0.00]},
+    {"name": "blender_Plane.007", "position": [-55.20,0.00,-48.65], "rotation": [-0.00,270.00,0.00]},
+    {"name": "blender_Cube.001", "position": [0.00,0.00,0.00], "rotation": [0.00,0.00,0.00]},
+    {"name": "blender_Cube.002", "position": [0.00,0.00,-104.90], "rotation": [0.00,0.00,0.00]}
+  ]
+}

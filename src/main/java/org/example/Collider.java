@@ -134,6 +134,8 @@ public class Collider implements Listener {
         pos.mulPosition(matrix4f2);
         dir.mulDirection(matrix4f2);
 
+        objekt.transformation.getMatrix().invert(matrix4f2);
+
 
 
 

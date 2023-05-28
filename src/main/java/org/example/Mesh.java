@@ -2,7 +2,8 @@ package org.example;
 
 import org.example.assets.JsonMesh;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL40;
+
+import static org.lwjgl.opengl.GL40.*;
 
 public class Mesh {
     private ShaderTyp shaderTyp;
@@ -20,16 +21,23 @@ public class Mesh {
     public final float[] normals;
     public final float[] textures;
 
+    public final float r;
+    public final float g;
+    public final float b;
+
     Mesh(JsonMesh jsonMesh)
     {
-        this(jsonMesh.vertex, jsonMesh.normal, jsonMesh.texture, jsonMesh.texturePath);
+        this(jsonMesh.vertex, jsonMesh.normal, jsonMesh.color, jsonMesh.texture, jsonMesh.texturePath);
     }
 
-    Mesh(float[] positionen, float[] normals, float[] texturKoordinaten, String texturePath)
+    Mesh(float[] positionen, float[] normals, float[] color, float[] texturKoordinaten, String texturePath)
     {
         this.vertices = positionen.clone();
         this.normals = normals.clone();
         this.textures = texturKoordinaten.clone();
+        this.r = color[0];
+        this.g = color[1];
+        this.b = color[2];
 
         boolean hasTexture = texturKoordinaten.length > 0 && !texturePath.equals("");
 
@@ -40,11 +48,14 @@ public class Mesh {
 
     }
 
-    Mesh(float[] positionen, float[] normals, float[] texturKoordinaten, int textureId)
+    Mesh(float[] positionen, float[] normals, float[] color, float[] texturKoordinaten, int textureId)
     {
         this.vertices = positionen.clone();
         this.normals = normals.clone();
         this.textures = texturKoordinaten.clone();
+        this.r = color[0];
+        this.g = color[1];
+        this.b = color[2];
 
         generateMesh(positionen, normals, texturKoordinaten, textureId);
     }
@@ -78,22 +89,22 @@ public class Mesh {
         this.textureId = textureId;
 
         // load mesh to gpu
-        VAO = GL40.glGenVertexArrays();
-        GL40.glBindVertexArray(VAO);
+        VAO = glGenVertexArrays();
+        glBindVertexArray(VAO);
 
-        VBO = GL40.glGenBuffers();
-        GL40.glBindBuffer(GL40.GL_ARRAY_BUFFER, VBO);
-        GL40.glBufferData(GL40.GL_ARRAY_BUFFER, positionen, GL40.GL_STATIC_DRAW);
+        VBO = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, positionen, GL_STATIC_DRAW);
 
-        GL40.glVertexAttribPointer(0, 3, GL40.GL_FLOAT, false, 3 * Float.BYTES, 0);
-        GL40.glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
+        glEnableVertexAttribArray(0);
 
-        VBONormals = GL40.glGenBuffers();
-        GL40.glBindBuffer(GL40.GL_ARRAY_BUFFER, VBONormals);
-        GL40.glBufferData(GL40.GL_ARRAY_BUFFER, normals, GL40.GL_STATIC_DRAW);
+        VBONormals = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, VBONormals);
+        glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
 
-        GL40.glVertexAttribPointer(1, 3, GL40.GL_FLOAT, false, 3 * Float.BYTES, 0);
-        GL40.glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
+        glEnableVertexAttribArray(1);
 
         if(texturKoordinaten == null)
         {
@@ -103,16 +114,16 @@ public class Mesh {
         {
             shaderTyp = ShaderTyp.MIT_TEXTUR;
 
-            VBOTexture = GL40.glGenBuffers();
+            VBOTexture = glGenBuffers();
 
-            GL40.glBindBuffer(GL40.GL_ARRAY_BUFFER, VBOTexture);
-            GL40.glBufferData(GL40.GL_ARRAY_BUFFER, texturKoordinaten, GL40.GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, VBOTexture);
+            glBufferData(GL_ARRAY_BUFFER, texturKoordinaten, GL_STATIC_DRAW);
 
-            GL40.glVertexAttribPointer(2, 2, GL40.GL_FLOAT, false, 2 * Float.BYTES, 0);
-            GL40.glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, false, 2 * Float.BYTES, 0);
+            glEnableVertexAttribArray(2);
         }
 
-        GL40.glBindVertexArray(0);
+        glBindVertexArray(0);
     }
 
     public int getVAO()
@@ -138,5 +149,14 @@ public class Mesh {
     public void getSize(Vector3f out)
     {
         out.set(size);
+    }
+
+    public void destroy()
+    {
+        glDeleteVertexArrays(VAO);
+        glDeleteBuffers(VBO);
+        glDeleteBuffers(VBONormals);
+        if(shaderTyp == ShaderTyp.MIT_TEXTUR)
+            glDeleteBuffers(VBOTexture);
     }
 }

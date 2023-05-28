@@ -8,16 +8,20 @@ import java.util.ArrayList;
 public class Umgebung {
     public static Umgebung umgebung;
 
+    public String sceneName;
+
     public Auto auto;
     public ArrayList<Objekt> objekte = new ArrayList<>();
     public Kamera kamera;
+    private RenderTarget renderTarget;
 
     private Zwei_D_Kamera zwei_d_kamera;
     private DistanceSensor distanceSensor;
 
-    Umgebung()
+    Umgebung(String sceneName)
     {
-        RenderTarget renderTarget = new RenderTarget(720, 480, 0, RENDER_TARGET_COLOR_FORMAT.RGBA);
+        this.sceneName = sceneName;
+        renderTarget = new RenderTarget(720, 480, 0, RENDER_TARGET_COLOR_FORMAT.RGBA);
         kamera = new Kamera(renderTarget);
 
         zwei_d_kamera = new Zwei_D_Kamera(this);
@@ -50,8 +54,13 @@ public class Umgebung {
     public void aktualisieren()
     {
         VectorMatrixPool.returnAll();
-        auto.move();
+        if(auto != null)
+            auto.move();
         zwei_d_kamera.ausfuehren(0f);
+
+        distanceSensor.position.set(auto.transformation.getPosition());
+        distanceSensor.position.y += 10;
+        distanceSensor.rotation.set(auto.transformation.getQuaternion());
         distanceSensor.ausfuehren(0f);
     }
 
@@ -64,21 +73,23 @@ public class Umgebung {
         for (Objekt o : objekte) {
             renderer.draw(o);
         }
-        renderer.draw(auto);
+
+        if(auto != null)
+            renderer.draw(auto);
     }
 
     public void visualisieren()
     {
         Renderer renderer = Renderer.getInstance();
 
-        tmp.x = 2;
-        tmp.y = 4;
-        tmp.z = -3;
+        tmp.x = 100;
+        tmp.y = 200;
+        tmp.z = -150;
 
         kamera.position.set(tmp);
-        tmp.x = 2;
+        tmp.x = 0;
         tmp.y = 0;
-        tmp.z = 1;
+        tmp.z = 0;
         kamera.lookAt.set(tmp);
         kamera.updateMatrix();
 
@@ -114,5 +125,17 @@ public class Umgebung {
                 }
             }
         }
+    }
+
+    public void destroy()
+    {
+        if(auto != null)
+            auto.destroy();
+
+        renderTarget.destroy();
+        objekte.clear();
+
+        zwei_d_kamera.destroy();
+        distanceSensor.destroy();
     }
 }

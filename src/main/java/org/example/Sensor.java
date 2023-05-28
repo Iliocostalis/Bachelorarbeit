@@ -15,4 +15,6 @@ public abstract class Sensor{
     }
 
     public abstract void ausfuehren(float vergangeneZeit);
+
+    public abstract void destroy();
 }
