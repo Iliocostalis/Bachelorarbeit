@@ -1,0 +1,6 @@
+{
+    "name": "plugin_map",
+    "objekts": [{"name":"plugin_Plane","position":"plugin_Plane","rotation":"plugin_Plane"}],
+    "position": [-55.2,0.0,3.8],
+    "rotation": [0.0,0.0,0.0]
+}

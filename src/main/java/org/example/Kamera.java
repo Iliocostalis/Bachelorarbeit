@@ -10,13 +10,6 @@ import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class Kamera {
-    int width;
-    int height;
-
-    int FBO;
-    int colorTexture;
-    int depthBuffer;
-    int uniformID;
 
     private Matrix4f projection = new Matrix4f();
     private Matrix4f view = new Matrix4f();
