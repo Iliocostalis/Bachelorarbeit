@@ -11,7 +11,7 @@ public class Auto extends Objekt implements Listener{
 
     //Default direction -> X+
 
-    ArrayList<Sensor> sensoren = new ArrayList<>();
+    ArrayList<Sensor> sensoren;
     Vector3f back = new Vector3f(0,0.1f,0);
     Vector3f front = new Vector3f(1,0.1f,0);
 
@@ -30,9 +30,10 @@ public class Auto extends Objekt implements Listener{
 
     private boolean skipTransformationUpdate;
 
-    public Auto(JsonCar jsonCar, JsonObjektInstance jsonObjektInstance, int meshHash)
+    public Auto(JsonCar jsonCar, JsonObjektInstance jsonObjektInstance, int meshHash, ArrayList<Sensor> sensoren)
     {
         super(jsonObjektInstance, meshHash);
+        this.sensoren = sensoren;
         transformation.addModifiedListener(this);
 
         skipTransformationUpdate = false;
@@ -77,7 +78,18 @@ public class Auto extends Objekt implements Listener{
         }
     }
 
-    public void move()
+    public void update()
+    {
+        move();
+
+        for(Sensor sensor : sensoren)
+        {
+            sensor.updatePosition(transformation);
+            sensor.ausfuehren(0);
+        }
+    }
+
+    private void move()
     {
         skipTransformationUpdate = true;
 

@@ -13,7 +13,7 @@ public class Main {
 
         Fenster fenster = new Fenster();
         UmgebungsLader.load();
-        Umgebung.umgebung = UmgebungsLader.getEnviroment("blender");
+        Umgebung.umgebung = UmgebungsLader.getEnviroment("plugin");
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while(fenster.istOffen())

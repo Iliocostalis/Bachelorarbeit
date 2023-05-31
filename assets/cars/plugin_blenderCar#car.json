@@ -3,7 +3,10 @@
     "mesh_name": "plugin_blenderCar#car",
     "car_length": 20,
     "lenkwinkel": 40,
-    "sensors": [{"name":"plugin_cam1#cam","position":[27.919,0.0,0.0],
+    "sensors": [
+        {
+            "name": "plugin_cam1#cam",
+            "position": [27.919,0.0,0.0],
             "rotation": [-0.0,0.0,0.0]
         }
     ]

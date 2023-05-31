@@ -1,15 +1,20 @@
 package org.example;
 
+import org.example.assets.JsonObjektInstance;
+import org.example.assets.JsonSensor;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL40;
 
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 
-import static org.lwjgl.opengl.GL40.*;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glFlush;
+import static org.lwjgl.opengl.GL11.glReadPixels;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL15.glUnmapBuffer;
+import static org.lwjgl.opengl.GL21.GL_PIXEL_PACK_BUFFER;
+import static org.lwjgl.opengl.GL30.*;
 
-public class Zwei_D_Kamera extends Sensor{
+public class KameraSensor extends Sensor{
 
     int width;
     int height;
@@ -27,12 +32,14 @@ public class Zwei_D_Kamera extends Sensor{
     private RenderTarget renderTarget;
     private Kamera kamera;
 
-    public Zwei_D_Kamera()
-    {
-        super();
 
-        width = 300;
-        height = 300;
+
+    public KameraSensor(JsonSensor jsonSensor, JsonObjektInstance jsonObjektInstance)
+    {
+        super(jsonObjektInstance);
+
+        width = jsonSensor.resolution_width;
+        height = jsonSensor.resolution_height;
         renderTarget = new RenderTarget(width, height, RENDER_TARGET_COLOR_FORMAT.RGB);
         kamera = new Kamera(renderTarget);
         createPBO();
@@ -52,34 +59,22 @@ public class Zwei_D_Kamera extends Sensor{
         glBufferData(GL_PIXEL_PACK_BUFFER, imageSize, GL_STREAM_READ);
     }
 
-    public void zerstoeren()
-    {
-
-    }
-
     private void sendImage()
     {
         Schnittstelle schnittstelle = Schnittstelle.getInstance();
         schnittstelle.senden(data);
     }
 
-    Vector3f tmp = new Vector3f();
+    @Override
+    public void updatePosition(Transformation transformationCar)
+    {
+        super.updatePosition(transformationCar);
+        kamera.updateMatrix(position, rotation);
+    }
+
     @Override
     public void ausfuehren(float vergangeneZeit)
     {
-        tmp.x = 2;
-        tmp.y = 10;
-        tmp.z = 0.5f;
-
-        kamera.position.set(tmp);
-        tmp.x = 2;
-        tmp.y = 0;
-        tmp.z = 1;
-        kamera.lookAt.set(tmp);
-        kamera.updateMatrix();
-
-        kamera.updateMatrix();
-
         Renderer renderer = Renderer.getInstance();
         renderer.setKamera(kamera);
         Umgebung.umgebung.draw();

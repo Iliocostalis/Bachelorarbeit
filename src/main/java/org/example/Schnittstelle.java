@@ -94,7 +94,7 @@ public class Schnittstelle {
             if(sending)
             {
                 try {
-                    System.out.println("sending");
+                    //System.out.println("sending");
                     outputStream.write(byteBufferA, 0, sendingLength);
                     sending = false;
                 } catch (IOException e) {

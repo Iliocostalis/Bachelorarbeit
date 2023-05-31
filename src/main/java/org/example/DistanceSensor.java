@@ -4,8 +4,8 @@ import org.joml.Vector3f;
 
 public class DistanceSensor extends Sensor {
 
-    DistanceSensor(Umgebung umgebung) {
-        super(umgebung);
+    DistanceSensor() {
+        super();
 
         position.set(1,10,1);
         //rotation.lookAlong(0,-1,0,0,1,0);

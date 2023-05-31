@@ -27,6 +27,9 @@ public class ReciveTest {
     private OutputStream os;
     private InputStream is;
 
+    int width = 720;
+    int height = 480;
+
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -57,7 +60,7 @@ public class ReciveTest {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
         // Create the window
-        window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
+        window = glfwCreateWindow(width, height, "Hello World!", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -116,8 +119,8 @@ public class ReciveTest {
         // Set the clear color
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-        final int imageSize = 300*300*3;
-        final int readSize = 300*300*3 + 9;
+        final int imageSize = width*height*3;
+        final int readSize = width*height*3 + 9;
         ByteBuffer byteBuffer = BufferUtils.createByteBuffer(imageSize);
         byte[] image = new byte[readSize];
 
@@ -156,7 +159,7 @@ public class ReciveTest {
             //}
             //byteBuffer.put(0, image);
 
-            glDrawPixels(300,300, GL_RGB, GL_UNSIGNED_BYTE, byteBuffer);
+            glDrawPixels(width,height, GL_RGB, GL_UNSIGNED_BYTE, byteBuffer);
 
             glfwSwapBuffers(window); // swap the color buffers
             System.out.println(System.currentTimeMillis() - time);

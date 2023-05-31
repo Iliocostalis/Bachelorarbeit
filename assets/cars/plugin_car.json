@@ -1,0 +1,13 @@
+{
+    "name": "plugin_car",
+    "mesh_name": "plugin_car",
+    "car_length": 20,
+    "lenkwinkel": 40,
+    "sensors": [
+        {
+            "name": "plugin_cam1",
+            "position": [-24.2,53.381,0.0],
+            "rotation": [-0.0,0.0,-40.0]
+        }
+    ]
+}

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,17 +107,17 @@ public class UmgebungsLader {
                 return umgebung;
             }
 
-            JsonMap jsonMap = maps.get(jsonScene.enviroment);
-            if(jsonMap == null)
-            {
-                System.out.println("Can not read maps: " + jsonScene.enviroment);
-                return umgebung;
-            }
+            //JsonMap jsonMap = maps.get(jsonScene.enviroment);
+            //if(jsonMap == null)
+            //{
+            //    System.out.println("Can not read maps: " + jsonScene.enviroment);
+            //    return umgebung;
+            //}
 
-            JsonCar jsonCar = cars.get(jsonScene.car_instance.name);
+            JsonCar jsonCar = cars.get(jsonScene.car.name);
             if(jsonCar == null)
             {
-                System.out.println("Can not read car: " + jsonScene.car_instance.name);
+                System.out.println("Can not read car: " + jsonScene.car.name);
                 return umgebung;
             }
 
@@ -127,9 +128,22 @@ public class UmgebungsLader {
                 return umgebung;
             }
 
-            umgebung.auto = new Auto(jsonCar, jsonScene.car_instance, loadMesh(jsonCarObjekt));
+            ArrayList<Sensor> sensoren = new ArrayList<>();
+            for(JsonObjektInstance sensorInstance : jsonCar.sensors)
+            {
+                JsonSensor sensor = sensors.get(sensorInstance.name);
+                if(sensor == null)
+                {
+                    System.out.println("Can not read sensor: " + sensorInstance.name);
+                    continue;
+                }
+                sensoren.add(SensorCreator.create(sensor, sensorInstance));
+            }
 
-            for(JsonObjektInstance instance : jsonMap.objekts)
+
+            umgebung.auto = new Auto(jsonCar, jsonScene.car, loadMesh(jsonCarObjekt), sensoren);
+
+            for(JsonObjektInstance instance : jsonScene.objects)
             {
                 JsonMesh jsonMesh = meshs.get(instance.name);
                 if(jsonMesh == null)

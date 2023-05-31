@@ -24,8 +24,8 @@ public class Umgebung {
         renderTarget = new RenderTarget(720, 480, 0, RENDER_TARGET_COLOR_FORMAT.RGBA);
         kamera = new Kamera(renderTarget);
 
-        zwei_d_kamera = new Zwei_D_Kamera(this);
-        distanceSensor = new DistanceSensor(this);
+        zwei_d_kamera = new Zwei_D_Kamera();
+        distanceSensor = new DistanceSensor();
 
         /*
         Objekt objekt = new Objekt();
@@ -55,13 +55,14 @@ public class Umgebung {
     {
         VectorMatrixPool.returnAll();
         if(auto != null)
-            auto.move();
-        zwei_d_kamera.ausfuehren(0f);
+            auto.update();
 
-        distanceSensor.position.set(auto.transformation.getPosition());
-        distanceSensor.position.y += 10;
-        distanceSensor.rotation.set(auto.transformation.getQuaternion());
-        distanceSensor.ausfuehren(0f);
+        //zwei_d_kamera.ausfuehren(0f);
+
+        distanceSensor.offsetPosition.set(auto.transformation.getPosition());
+        distanceSensor.offsetRotation.y += 10;
+        distanceSensor.offsetRotation.set(auto.transformation.getQuaternion());
+        //distanceSensor.ausfuehren(0f);
     }
 
     Vector3f tmp = new Vector3f();

@@ -1,6 +1,7 @@
 package org.example;
 
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
@@ -26,6 +27,15 @@ public class Kamera {
         this.renderTarget = renderTarget;
         projection.perspective((float)Math.toRadians(60.f) , 16.0f / 9.0f, 0.1f, 1000.f, true);
         view.lookAt(position, lookAt, up);
+    }
+
+    public void updateMatrix(Vector3f position, Quaternionf quaternionf)
+    {
+        this.position.set(position);
+        quaternionf.transform(1,0,0,lookAt);
+        lookAt.add(position);
+
+        updateMatrix();
     }
 
     public void updateMatrix()
