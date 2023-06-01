@@ -44,11 +44,22 @@ public class Fenster {
             if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 
+            if(key == GLFW_KEY_W && action == GLFW_PRESS)
+                Auto.moveDir = 1f;
+            if(key == GLFW_KEY_S && action == GLFW_PRESS)
+                Auto.moveDir = -1f;
+            if(key == GLFW_KEY_W && action == GLFW_RELEASE)
+                Auto.moveDir = 0f;
+            if(key == GLFW_KEY_S && action == GLFW_RELEASE)
+                Auto.moveDir = 0f;
+
             if(key == GLFW_KEY_D && action == GLFW_PRESS)
                 Auto.rotationS = -50f;
             if(key == GLFW_KEY_A && action == GLFW_PRESS)
                 Auto.rotationS = 50f;
-            if(action == GLFW_RELEASE)
+            if(key == GLFW_KEY_A && action == GLFW_RELEASE)
+                Auto.rotationS = 0f;
+            if(key == GLFW_KEY_D && action == GLFW_RELEASE)
                 Auto.rotationS = 0f;
         });
 

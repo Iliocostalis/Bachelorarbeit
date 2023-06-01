@@ -26,6 +26,7 @@ public class Auto extends Objekt implements Listener{
     float rotation = (float)Math.toRadians(20);
 
     static float rotationS = 0;
+    static float moveDir = 0;
     float length;
 
     private boolean skipTransformationUpdate;
@@ -108,7 +109,7 @@ public class Auto extends Objekt implements Listener{
         currentDirection.rotateY((float)Math.toRadians(rotationS), direction);
 
         // move front
-        front.add(direction.mul(0.1f));
+        front.add(direction.mul(0.5f * moveDir));
 
         // get new direction
         front.sub(back, direction);

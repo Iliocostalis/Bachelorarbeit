@@ -11,6 +11,13 @@ public class Objekt {
 
     private Collider collider;
 
+    public Objekt(int meshHash)
+    {
+        this.meshHash = meshHash;
+        transformation = new Transformation();
+        collider = new Collider(this);
+    }
+
     public Objekt(JsonObjektInstance jsonObjektInstance, int meshHash)
     {
         this.meshHash = meshHash;

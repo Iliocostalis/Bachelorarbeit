@@ -2,8 +2,8 @@
     "name": "plugin",
     "car": {
         "name": "plugin_car",
-        "position": [-52.98,0.0,-46.53],
-        "rotation": [-0.0,0.0,0.0]
+        "position": [-54.92,0.0,56.88],
+        "rotation": [-0.0,90.0,0.0]
     },
     "objects": [
         {
@@ -13,8 +13,8 @@
         },
         {
             "name": "plugin_Plane.001",
-            "position": [-55.2,0.0,56.25],
-            "rotation": [0.0,0.0,0.0]
+            "position": [-55.2,0.0,161.15],
+            "rotation": [0.0,90.0,0.0]
         },
         {
             "name": "plugin_Plane.002",
@@ -23,7 +23,7 @@
         },
         {
             "name": "plugin_Plane.003",
-            "position": [-2.75,0.0,56.25],
+            "position": [49.7,0.0,161.15],
             "rotation": [-0.0,90.0,0.0]
         },
         {
@@ -34,7 +34,7 @@
         {
             "name": "plugin_Plane.005",
             "position": [49.7,0.0,-48.65],
-            "rotation": [-0.0,180.0,0.0]
+            "rotation": [-0.0,270.0,0.0]
         },
         {
             "name": "plugin_Plane.006",
@@ -44,7 +44,7 @@
         {
             "name": "plugin_Plane.007",
             "position": [-55.2,0.0,-48.65],
-            "rotation": [-0.0,270.0,0.0]
+            "rotation": [-0.0,0.0,0.0]
         },
         {
             "name": "plugin_Cube.001",
@@ -55,6 +55,36 @@
             "name": "plugin_Cube.002",
             "position": [0.0,0.0,-104.9],
             "rotation": [0.0,0.0,0.0]
+        },
+        {
+            "name": "plugin_Plane.008",
+            "position": [102.15,0.0,56.25],
+            "rotation": [-0.0,270.0,0.0]
+        },
+        {
+            "name": "plugin_Plane.009",
+            "position": [102.15,0.0,108.7],
+            "rotation": [0.0,0.0,0.0]
+        },
+        {
+            "name": "plugin_Plane.010",
+            "position": [102.15,0.0,161.15],
+            "rotation": [-0.0,540.0,0.0]
+        },
+        {
+            "name": "plugin_Plane.011",
+            "position": [-55.2,0.0,56.25],
+            "rotation": [0.0,0.0,0.0]
+        },
+        {
+            "name": "plugin_Plane.012",
+            "position": [-55.2,0.0,108.7],
+            "rotation": [0.0,0.0,0.0]
+        },
+        {
+            "name": "plugin_Plane.013",
+            "position": [-2.75,0.0,161.15],
+            "rotation": [-0.0,90.0,0.0]
         }
     ]
 }

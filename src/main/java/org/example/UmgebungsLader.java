@@ -162,6 +162,17 @@ public class UmgebungsLader {
         return umgebung;
     }
 
+    public static int getMeshHash(String name)
+    {
+        JsonMesh jsonMesh = meshs.get(name);
+        if(jsonMesh == null)
+        {
+            System.out.println("Can not read mesh: " + name);
+            return 0;
+        }
+        return loadMesh(jsonMesh);
+    }
+
     public static Mesh getMesh(int hash)
     {
         return loadedMeshs.get(hash);

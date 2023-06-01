@@ -12,6 +12,7 @@ public class Umgebung {
 
     public Auto auto;
     public ArrayList<Objekt> objekte = new ArrayList<>();
+    public ArrayList<Objekt> debugObjekte = new ArrayList<>();
     public Kamera kamera;
     private RenderTarget renderTarget;
 
@@ -59,10 +60,10 @@ public class Umgebung {
 
         //zwei_d_kamera.ausfuehren(0f);
 
-        distanceSensor.offsetPosition.set(auto.transformation.getPosition());
-        distanceSensor.offsetRotation.y += 10;
-        distanceSensor.offsetRotation.set(auto.transformation.getQuaternion());
-        //distanceSensor.ausfuehren(0f);
+        distanceSensor.position.set(auto.transformation.getPosition());
+        distanceSensor.position.y += 5;
+        distanceSensor.rotation.set(auto.transformation.getQuaternion());
+        distanceSensor.ausfuehren(0f);
     }
 
     Vector3f tmp = new Vector3f();
@@ -97,6 +98,11 @@ public class Umgebung {
         renderer.setKamera(kamera);
 
         draw();
+
+        for (Objekt o : debugObjekte) {
+            renderer.draw(o);
+        }
+        debugObjekte.clear();
     }
 
     public void getRayIntersection(Vector3f rayOrigin, Vector3f rayDirection, float maxDistance, Vector3f outPosition)
@@ -118,7 +124,7 @@ public class Umgebung {
                 intersection.set(o.getRayIntersectionPosition());
                 intersection.sub(rayOrigin, intersectionOffset);
 
-                float distance = intersection.lengthSquared();
+                float distance = intersectionOffset.lengthSquared();
                 if(distance < distanceSquared)
                 {
                     distanceSquared = distance;

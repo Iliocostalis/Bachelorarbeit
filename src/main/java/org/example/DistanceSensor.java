@@ -4,12 +4,16 @@ import org.joml.Vector3f;
 
 public class DistanceSensor extends Sensor {
 
+    Objekt debugObjekt;
+
     DistanceSensor() {
         super();
 
         position.set(1,10,1);
         //rotation.lookAlong(0,-1,0,0,1,0);
         rotation.rotateZ(-ConstValues.DEGREES_TO_RADIANS * 90f);
+
+        debugObjekt = new Objekt(UmgebungsLader.getMeshHash("default_Icosphere"));
     }
 
     @Override
@@ -23,8 +27,11 @@ public class DistanceSensor extends Sensor {
 
         Umgebung.umgebung.getRayIntersection(position, direction, 100f, pos);
 
+        debugObjekt.transformation.setPosition(pos);
+        Umgebung.umgebung.debugObjekte.add(debugObjekt);
+
         pos.sub(position);
-        System.out.println(pos.length());
+        //System.out.println(pos.length());
     }
 
     @Override
