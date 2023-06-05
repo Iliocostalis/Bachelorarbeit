@@ -8,7 +8,7 @@ public class SensorCreator {
     {
         switch(sensor.type)
         {
-            case "2DCAM":
+            case "CAM":
                 return new KameraSensor(sensor, sensorInstance);
 
         }

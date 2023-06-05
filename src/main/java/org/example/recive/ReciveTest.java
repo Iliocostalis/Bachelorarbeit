@@ -1,5 +1,6 @@
 package org.example.recive;
 
+import org.example.ConstValues;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -27,8 +28,8 @@ public class ReciveTest {
     private OutputStream os;
     private InputStream is;
 
-    int width = 720;
-    int height = 480;
+    int width = 721;
+    int height = 481;
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -108,6 +109,26 @@ public class ReciveTest {
         }
     }
 
+    private void setWindowSize(int width, int height)
+    {
+        glFlush();
+
+        this.width = width;
+        this.height = height;
+        imageSize = width*height*3;
+        readSize = width*height*3 + 13;
+        byteBuffer = BufferUtils.createByteBuffer(imageSize);
+        image = new byte[imageSize];
+
+        glfwSetWindowSize(window, width, height);
+    }
+
+    int imageSize;
+    int readSize;
+    ByteBuffer byteBuffer;
+    byte[] image;
+    byte[] headerBuffer = new byte[13];
+
     private void loop() {
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
@@ -119,10 +140,10 @@ public class ReciveTest {
         // Set the clear color
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-        final int imageSize = width*height*3;
+        /*final int imageSize = width*height*3;
         final int readSize = width*height*3 + 9;
         ByteBuffer byteBuffer = BufferUtils.createByteBuffer(imageSize);
-        byte[] image = new byte[readSize];
+        byte[] image = new byte[readSize];*/
 
         //int PBO = glGenBuffers();
         //glBindBuffer(GL_PIXEL_UNPACK_BUFFER, PBO);
@@ -138,17 +159,38 @@ public class ReciveTest {
                 if(is.available() != 0)
                 {
                     int read = 0;
+                    int readSize = 13;
+
+                    while(read < readSize)
+                        read += is.read(headerBuffer, read, readSize);
+
+                    readSize = ConstValues.byteArrayToInt(0, headerBuffer);
+                    int type = headerBuffer[4];
+                    int rWidth = ConstValues.byteArrayToInt(5, headerBuffer);
+                    int rHeight = ConstValues.byteArrayToInt(9, headerBuffer);
+
+                    if(rWidth != width || rHeight != height)
+                    {
+                        setWindowSize(rWidth, rHeight);
+                    }
 
                     while(read < readSize)
                     {
-                        read += is.read(image, read, readSize - read);
+                        read += is.read(image, read-13, readSize - read);
                     }
 
-                    byteBuffer.put(0, image, 9, imageSize);
-                    //ByteBuffer byteBuffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-                    //byteBuffer.
-                    //byteBuffer.get(data);
-                    //glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+                    if(type == 11) // depth
+                    {
+                        for(int i = width*height*3-1, o = width*height-1; i >= 13; i-=3, o--)
+                        {
+                            image[i] = image[o];
+                            image[i-1] = image[o];
+                            image[i-2] = image[o];
+                        }
+                    }
+
+
+                    byteBuffer.put(0, image, 0, imageSize);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -159,7 +201,8 @@ public class ReciveTest {
             //}
             //byteBuffer.put(0, image);
 
-            glDrawPixels(width,height, GL_RGB, GL_UNSIGNED_BYTE, byteBuffer);
+            if(byteBuffer != null)
+                glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_BYTE, byteBuffer);
 
             glfwSwapBuffers(window); // swap the color buffers
             System.out.println(System.currentTimeMillis() - time);

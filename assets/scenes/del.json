@@ -1,0 +1,10 @@
+{
+    "name": "del",
+    "objects": [
+        {
+            "name": "del_Plane.005",
+            "position": [49.7,0.0,-48.65],
+            "rotation": [-0.0,270.0,0.0]
+        }
+    ]
+}

@@ -52,18 +52,30 @@ public class Schnittstelle {
     public void start()
     {
         thread = new Thread(() -> {
-            System.out.println("Schnittstelle läuft!");
+            isRunning.set(true);
+
             try {
                 serverSocket = new ServerSocket(26134);
-                clientSocket = serverSocket.accept();
-                outputStream = clientSocket.getOutputStream();
-                inputStream = clientSocket.getInputStream();
-                isRunning.set(true);
-                runSenden();
-            } catch (SocketException e) {
-                return;
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            }
+
+            while(isRunning.get())
+            {
+                System.out.println("Schnittstelle läuft!");
+                try {
+                    sending = false;
+                    isRunning.set(false);
+                    clientSocket = serverSocket.accept();
+                    outputStream = clientSocket.getOutputStream();
+                    inputStream = clientSocket.getInputStream();
+                    isRunning.set(true);
+                    runSenden();
+                } catch (SocketException e) {
+                    //return;
+                } catch (IOException e) {
+                    //throw new RuntimeException(e);
+                }
             }
         });
 
@@ -88,18 +100,14 @@ public class Schnittstelle {
         }
     }
 
-    public void runSenden() {
+    public void runSenden() throws IOException {
+        //System.out.println("sending");
         while(isRunning.get())
         {
             if(sending)
             {
-                try {
-                    //System.out.println("sending");
-                    outputStream.write(byteBufferA, 0, sendingLength);
-                    sending = false;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                outputStream.write(byteBufferA, 0, sendingLength);
+                sending = false;
             }
         }
     }

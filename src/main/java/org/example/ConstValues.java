@@ -18,4 +18,13 @@ public class ConstValues {
         array[offset + 2] = (byte) (value >>> 8);
         array[offset + 3] = (byte) value;
     }
+
+    public static int byteArrayToInt(int offset, byte[] array) {
+        int val = 0;
+        val |= ((int)array[offset] << 24) & 0xff000000;
+        val |= ((int)array[offset + 1] << 16) & 0xff0000;
+        val |= ((int)array[offset + 2] << 8) & 0xff00;
+        val |= ((int)array[offset + 3]) & 0xff;
+        return val;
+    }
 }

@@ -27,29 +27,6 @@ public class Umgebung {
 
         zwei_d_kamera = new Zwei_D_Kamera();
         distanceSensor = new DistanceSensor();
-
-        /*
-        Objekt objekt = new Objekt();
-        float[] positionen = {0f,0f,0f, 1f,0f,0f, 1f,1f,0f};
-        objekt.mesh = new Mesh(positionen, null, 0);
-        objekte.add(objekt);
-
-
-
-
-
-        Objekt objektTxt = new Objekt();
-        int txId = TextureLoader.getInstance().loadTexture("assets\\images\\test.png");
-        float[] positionentxt = {0f,0f,0f, 1f,0f,0f, 1f,1f,0f,    0f,0f,0f, 1f,1f,0f, 0f,1f,0f};
-        float[] tx = {0f,0f, 1f,0f, 1f,1f,    0f,0f, 1f,1f, 0f,1f};
-        objektTxt.mesh = new Mesh(positionentxt, tx, txId);
-        objekte.add(objektTxt);
-
-
-        Objekt objekt2 = new Objekt();
-        float[] positionen2 = {-2f,0f,0f, -1f,0f,0f, -1f,1f,0f};
-        objekt2.mesh = new Mesh(positionen2, null, 0);
-        objekte.add(objekt2);*/
     }
 
     public void aktualisieren()
@@ -97,6 +74,7 @@ public class Umgebung {
 
         renderer.setKamera(kamera);
 
+        //System.out.println(auto.transformation.getPosition().distance(kamera.position));
         draw();
 
         for (Objekt o : debugObjekte) {

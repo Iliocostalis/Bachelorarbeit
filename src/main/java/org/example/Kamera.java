@@ -20,13 +20,32 @@ public class Kamera {
     public Vector3f lookAt = new Vector3f();
     private Vector3f up = new Vector3f(0,1,0);
 
+    private float zNear;
+    private float zFar;
+    private float aspect;
+    private float fov;
+
     private RenderTarget renderTarget;
 
     Kamera(RenderTarget renderTarget)
     {
+        this(renderTarget, 60f, 0.1f, 500f);
+    }
+
+    Kamera(RenderTarget renderTarget, float fov, float zNear, float zFar)
+    {
         this.renderTarget = renderTarget;
-        projection.perspective((float)Math.toRadians(60.f) , 16.0f / 9.0f, 0.1f, 1000.f, true);
+        this.fov = fov;
+        aspect = (float)renderTarget.getWidth() / (float)renderTarget.getHeight();
+        this.zNear = zNear;
+        this.zFar = zFar;
+        updatePerspective();
         view.lookAt(position, lookAt, up);
+    }
+
+    private void updatePerspective()
+    {
+        projection.perspective((float)Math.toRadians(fov) , aspect, zNear, zFar, true);
     }
 
     public void updateMatrix(Vector3f position, Quaternionf quaternionf)
@@ -44,6 +63,11 @@ public class Kamera {
         view.lookAt(position, lookAt, up);
     }
 
+    public RENDER_TARGET_COLOR_FORMAT getColorFormat()
+    {
+        return renderTarget.farben;
+    }
+
     public void bindRenderTarget()
     {
         renderTarget.bind();
@@ -57,5 +81,25 @@ public class Kamera {
 
         view.get(matrixBuffer);
         glUniformMatrix4fv(1, false, matrixBuffer);
+    }
+
+    public float getZNear()
+    {
+        return zNear;
+    }
+
+    public float getZFar()
+    {
+        return zFar;
+    }
+
+    public float getAspect()
+    {
+        return aspect;
+    }
+
+    public float getFov()
+    {
+        return fov;
     }
 }

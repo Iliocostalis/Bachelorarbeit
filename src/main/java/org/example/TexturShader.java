@@ -126,7 +126,7 @@ public class TexturShader implements Shader{
         glAttachShader(shaderProgram, fragmentShader);
         glLinkProgram(shaderProgram);
 
-        glGetShaderiv(shaderProgram, GL_LINK_STATUS, success);
+        glGetProgramiv(shaderProgram, GL_LINK_STATUS, success);
 
         if(success[0] != 1)
         {

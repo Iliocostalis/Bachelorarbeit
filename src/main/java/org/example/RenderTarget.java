@@ -47,16 +47,9 @@ public class RenderTarget {
 
         glBindTexture(GL_TEXTURE_2D, colorTexture);
 
-        int farbformat;
-        switch (farben)
-        {
-            case SCHWARZ_WEISS -> farbformat = GL_RED;
-            case RGB -> farbformat = GL_RGB;
-            case BGR -> farbformat = GL_BGR;
-            case RGBA -> farbformat = GL_RGBA;
-            default -> farbformat = GL_RGB;
-        }
-        glTexImage2D(GL_TEXTURE_2D, 0, farbformat, width, height, 0, farbformat, GL_UNSIGNED_BYTE, 0);
+        int format = getOpenGlFormat();
+
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, 0);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -81,6 +74,8 @@ public class RenderTarget {
             case RGB -> 3;
             case BGR -> 3;
             case RGBA -> 4;
+            case DEPTH8 -> 1;
+            case DEPTH16 -> 2;
             default -> 3;
         };
     }
@@ -88,10 +83,12 @@ public class RenderTarget {
     public int getOpenGlFormat()
     {
         return switch (farben) {
-            case SCHWARZ_WEISS -> GL_R;
+            case SCHWARZ_WEISS -> GL_RED;
             case RGB -> GL_RGB;
             case BGR -> GL_BGR;
             case RGBA -> GL_RGBA;
+            case DEPTH8 -> GL_RED;
+            case DEPTH16 -> GL_RED;
             default -> GL_RGB;
         };
     }
@@ -101,7 +98,7 @@ public class RenderTarget {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glViewport(0,0, width, height);
 
-        glClearColor(0,0.5f,1,1);
+        glClearColor(0.1f,0.5f,1,1);
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
