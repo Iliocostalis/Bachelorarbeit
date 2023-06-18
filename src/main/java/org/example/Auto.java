@@ -46,8 +46,6 @@ public class Auto extends Objekt implements Listener{
         transformation.setScale(scale);
 
         measureSpeedDif();
-
-        isRayIntersecting(new Vector3f(0.0f,0.2f,-10), new Vector3f(0,0,1));
     }
 
     private void measureSpeedDif()
@@ -63,20 +61,22 @@ public class Auto extends Objekt implements Listener{
         pos.set(transformation.getPosition());
         rot.set(transformation.getQuaternion());
 
-        for(int l = 0; l < 2; l++)
-        {
-            rotationS = l*40;
+        for(int i = -1; i <= 1; i+=2)
+            for(int s = 0; s < 10; s++)
+            {
+                rotationS = (float)s * 40 / 10;
 
-            move();
+                moveDir = i;
+                move();
 
-            vector3fTmp.set(transformation.getPosition());
+                vector3fTmp.set(transformation.getPosition());
 
-            float distanceNormal = vector3fTmp.distance(pos) * 1000;
-            System.out.println(distanceNormal);
+                float distanceNormal = vector3fTmp.distance(pos) * 1000;
+                System.out.println(distanceNormal);
 
-            transformation.setPosition(posStart);
-            transformation.setQuaternion(rotStart);
-        }
+                transformation.setPosition(posStart);
+                transformation.setQuaternion(rotStart);
+            }
     }
 
     public void update()

@@ -6,5 +6,6 @@ public class JsonSensor extends JsonSuperClass {
     public int resolution_width;
     public int resolution_height;
     public int framerate;
+    public int maxRange;
     public String color_format;
 }

@@ -26,7 +26,7 @@ public class KameraSensor extends Sensor{
 
 
 
-
+    private ByteBuffer byteBuffer;
 
     private RenderTarget renderTarget;
     private Kamera kamera;
@@ -41,6 +41,8 @@ public class KameraSensor extends Sensor{
         height = jsonSensor.resolution_height;
         renderTarget = new RenderTarget(width, height, getColorFormat(jsonSensor.color_format));
         kamera = new Kamera(renderTarget);
+        imageSize = width*height*renderTarget.byteProPixel();
+
         createPBO();
 
         data = new byte[imageSize + sensorInfoSize];
@@ -70,8 +72,6 @@ public class KameraSensor extends Sensor{
 
     void createPBO()
     {
-        imageSize = width*height*renderTarget.byteProPixel();
-
         PBO = glGenBuffers();
         glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO);
         glBufferData(GL_PIXEL_PACK_BUFFER, imageSize, GL_STREAM_READ);
@@ -96,14 +96,14 @@ public class KameraSensor extends Sensor{
         Renderer renderer = Renderer.getInstance();
         renderer.setKamera(kamera);
         Umgebung.umgebung.draw();
-        //glFlush();
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, renderTarget.framebuffer);
         glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO);
         glReadPixels(0,0, width, height, GL_RED, GL_UNSIGNED_BYTE, 0);
 
-        ByteBuffer byteBuffer = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
-        byteBuffer.get(data, sensorInfoSize, imageSize);
+        byteBuffer = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY, imageSize, byteBuffer);
+        if(byteBuffer != null)
+            byteBuffer.get(data, sensorInfoSize, imageSize);
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 
         sendImage();
@@ -114,5 +114,6 @@ public class KameraSensor extends Sensor{
     @Override
     public void destroy() {
         renderTarget.destroy();
+        byteBuffer.clear();
     }
 }
