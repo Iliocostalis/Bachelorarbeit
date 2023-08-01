@@ -1,0 +1,13 @@
+{
+    "name": "julian_car",
+    "mesh_name": "julian_car",
+    "car_length": 20,
+    "lenkwinkel": 40,
+    "sensors": [
+        {
+            "name": "julian_cam1",
+            "position": [-25.248,53.045,-0.0],
+            "rotation": [-0.0,0.0,-23.643]
+        }
+    ]
+}

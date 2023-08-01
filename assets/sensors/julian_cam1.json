@@ -1,0 +1,9 @@
+{
+    "name": "julian_cam1",
+    "type": "CAM",
+    "fov": 90,
+    "resolution_width": 720,
+    "resolution_height": 480,
+    "framerate": 30,
+    "color_format": "RGB"
+}

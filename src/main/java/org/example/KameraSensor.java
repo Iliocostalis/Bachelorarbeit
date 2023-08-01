@@ -70,6 +70,19 @@ public class KameraSensor extends Sensor{
         };
     }
 
+    private int getPixelFormat()
+    {
+        return switch (renderTarget.farben)
+                {
+                    case SCHWARZ_WEISS -> GL_RED;
+                    case RGB -> GL_RGB;
+                    case BGR -> GL_BGR;
+                    case DEPTH8 -> GL_RED;
+                    case DEPTH16 -> GL_RED;
+                    default -> GL_RGB;
+                };
+    }
+
     void createPBO()
     {
         PBO = glGenBuffers();
@@ -99,7 +112,7 @@ public class KameraSensor extends Sensor{
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, renderTarget.framebuffer);
         glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO);
-        glReadPixels(0,0, width, height, GL_RED, GL_UNSIGNED_BYTE, 0);
+        glReadPixels(0,0, width, height, getPixelFormat(), GL_UNSIGNED_BYTE, 0);
 
         byteBuffer = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY, imageSize, byteBuffer);
         if(byteBuffer != null)
