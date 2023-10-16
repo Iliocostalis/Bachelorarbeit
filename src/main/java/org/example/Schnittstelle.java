@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.sensors.DataPackage;
+import org.example.sensors.Sensor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,6 +10,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Schnittstelle {
@@ -22,17 +27,18 @@ public class Schnittstelle {
 
     int sendIndexBufferA;
     int reciveIndexBufferA;
-    byte[] byteBufferA;
 
     int sendIndexBufferB;
     int reciveIndexBufferB;
-    byte[] byteBufferB;
 
     boolean sending = false;
     int sendingLength;
 
+    Queue<DataPackage> queue;
+    int[] sensorPackageCounter;
 
-    private AtomicBoolean isRunning = new AtomicBoolean();
+
+    private AtomicBoolean isRunning;
 
     public static Schnittstelle getInstance() {
         if (schnittstelle == null) {
@@ -43,10 +49,9 @@ public class Schnittstelle {
 
     Schnittstelle()
     {
-        System.out.println("Schnittstelle startet");
-        byteBufferA = new byte[1000*1000*50];
-        byteBufferB = new byte[1000*1000*50];
-        //start();
+        queue = new ConcurrentLinkedQueue<>();
+        sensorPackageCounter = new int[128];
+        isRunning = new AtomicBoolean();
     }
 
     public void start()
@@ -104,11 +109,12 @@ public class Schnittstelle {
         //System.out.println("sending");
         while(isRunning.get())
         {
-            if(sending)
-            {
-                outputStream.write(byteBufferA, 0, sendingLength);
-                sending = false;
-            }
+            DataPackage dataPackage = queue.poll();
+            if(dataPackage == null)
+                continue;
+
+            outputStream.write(dataPackage.header);
+            outputStream.write(dataPackage.customData);
         }
     }
 
@@ -147,13 +153,18 @@ public class Schnittstelle {
 
     }
 
-    public void senden(byte[] data)
+    public void senden(DataPackage dataPackage, int maxQueueCount)
     {
-        if(sending)
+        int address = dataPackage.header[1];
+        if(address < 0 || address >= sensorPackageCounter.length) {
+            System.out.println("Wrong address: " + address);
             return;
+        }
 
-        sendingLength = data.length;
-        System.arraycopy(data, 0, byteBufferA, 0, data.length);
-        sending = true;
+        if(sensorPackageCounter[address] < maxQueueCount)
+        {
+            sensorPackageCounter[address] += 1;
+            queue.add(new DataPackage(dataPackage));
+        }
     }
 }

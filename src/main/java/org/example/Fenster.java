@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.virtualEnvironment.Auto;
+import org.example.virtualEnvironment.Umgebung;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -18,6 +20,7 @@ public class Fenster {
     private final long window;
     private boolean offen;
 
+    private long nanosecondsRemaining;
 
     Fenster()
     {
@@ -45,22 +48,22 @@ public class Fenster {
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 
             if(key == GLFW_KEY_W && action == GLFW_PRESS)
-                Auto.moveDir = 1f;
+                Umgebung.umgebung.auto.setSpeed(1f);
             if(key == GLFW_KEY_S && action == GLFW_PRESS)
-                Auto.moveDir = -1f;
+                Umgebung.umgebung.auto.setSpeed(-1f);
             if(key == GLFW_KEY_W && action == GLFW_RELEASE)
-                Auto.moveDir = 0f;
+                Umgebung.umgebung.auto.setSpeed(0f);
             if(key == GLFW_KEY_S && action == GLFW_RELEASE)
-                Auto.moveDir = 0f;
+                Umgebung.umgebung.auto.setSpeed(0f);
 
             if(key == GLFW_KEY_D && action == GLFW_PRESS)
-                Auto.rotationS = -50f;
+                Umgebung.umgebung.auto.setSteeringAngle(-1f);
             if(key == GLFW_KEY_A && action == GLFW_PRESS)
-                Auto.rotationS = 50f;
+                Umgebung.umgebung.auto.setSteeringAngle(1f);
             if(key == GLFW_KEY_A && action == GLFW_RELEASE)
-                Auto.rotationS = 0f;
+                Umgebung.umgebung.auto.setSteeringAngle(0f);
             if(key == GLFW_KEY_D && action == GLFW_RELEASE)
-                Auto.rotationS = 0f;
+                Umgebung.umgebung.auto.setSteeringAngle(0f);
         });
 
         // Get the thread stack and push a new frame
@@ -100,10 +103,19 @@ public class Fenster {
         glEnable(GL_FRAMEBUFFER_SRGB);
     }
 
-    void update()
+    void update(long nanoseconds)
     {
         if(!offen)
             return;
+
+        long nanosecondDelay = 34*1000*1000;
+        nanosecondsRemaining -= nanoseconds;
+
+        if(nanosecondsRemaining > 0)
+            return;
+
+        while(nanosecondsRemaining <= 0)
+            nanosecondsRemaining += nanosecondDelay;
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
@@ -114,22 +126,15 @@ public class Fenster {
             return;
         }
 
-        long time = System.currentTimeMillis();
-        //while ( !glfwWindowShouldClose(window) ) {
 
-            Umgebung.umgebung.aktualisieren();
-            Umgebung.umgebung.visualisieren();
 
-            glfwSwapBuffers(window); // swap the color buffers
-            //System.out.println(System.currentTimeMillis() - time);
-            time = System.currentTimeMillis();
+        Umgebung.umgebung.visualisieren();
 
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
-            glfwPollEvents();
-        //}
+        glfwSwapBuffers(window); // swap the color buffers
 
-        //schließen();
+        // Poll for window events. The key callback above will only be
+        // invoked during this call.
+        glfwPollEvents();
     }
 
     void schließen()

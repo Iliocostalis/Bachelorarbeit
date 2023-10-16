@@ -1,12 +1,15 @@
 package org.example;
 
+import org.example.sensors.Kamera;
+import org.example.sensors.RENDER_TARGET_COLOR_FORMAT;
 import org.example.shader.DepthShader;
-import org.lwjgl.opengl.GL40;
+import org.example.shader.NormalerShader;
+import org.example.shader.ShaderTyp;
+import org.example.shader.TexturShader;
+import org.example.virtualEnvironment.Mesh;
+import org.example.virtualEnvironment.Objekt;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
-import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 public class Renderer {
 
@@ -43,29 +46,27 @@ public class Renderer {
         {
             case RGB:
             case BGR:
-            case RGBA:
-                kamera.bindMatrixToShader(normalerShader.shaderProgram);
-                kamera.bindMatrixToShader(texturShader.shaderProgram);
+                kamera.bindMatrixToShader(normalerShader.getProgram());
+                kamera.bindMatrixToShader(texturShader.getProgram());
             case DEPTH8:
             case DEPTH16:
-                kamera.bindMatrixToShader(depthShader.shaderProgram);
+                kamera.bindMatrixToShader(depthShader.getProgram());
                 glUniform3f(3, kamera.position.x, kamera.position.y, kamera.position.z);
                 glUniform1f(4, kamera.getZFar());
                 break;
-            case SCHWARZ_WEISS:
+            case BLACK_WHITE:
                 break;
         }
     }
 
     public void draw(Objekt objekt)
     {
-        Mesh mesh = UmgebungsLader.getMesh(objekt.meshHash);
+        Mesh mesh = objekt.mesh;
 
         switch (colorFormat)
         {
             case RGB:
             case BGR:
-            case RGBA:
                 if(mesh.getShaderTyp() == ShaderTyp.NORMAL)
                     normalerShader.draw(objekt, mesh);
                 else
@@ -75,7 +76,7 @@ public class Renderer {
             case DEPTH16:
                 depthShader.draw(objekt, mesh);
                 break;
-            case SCHWARZ_WEISS:
+            case BLACK_WHITE:
                 break;
         }
     }
