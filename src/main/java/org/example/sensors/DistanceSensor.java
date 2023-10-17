@@ -28,7 +28,7 @@ public class DistanceSensor extends Sensor {
     }
 
     @Override
-    public void ausfuehren(float vergangeneZeit)
+    public void ausfuehren(long nanos)
     {
         Vector3f pos = VectorMatrixPool.getVector3f();
 

@@ -108,7 +108,7 @@ public class Fenster {
         if(!offen)
             return;
 
-        long nanosecondDelay = 34*1000*1000;
+        long nanosecondDelay = 17*1000*1000;
         nanosecondsRemaining -= nanoseconds;
 
         if(nanosecondsRemaining > 0)

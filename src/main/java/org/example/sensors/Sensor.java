@@ -49,7 +49,7 @@ public abstract class Sensor{
         //rotation.mul(transformationCar.getQuaternion());
     }
 
-    public abstract void ausfuehren(float vergangeneZeit);
+    public abstract void ausfuehren(long nanos);
 
     public abstract void destroy();
 }

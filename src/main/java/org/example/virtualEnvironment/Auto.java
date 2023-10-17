@@ -42,8 +42,8 @@ public class Auto extends Objekt implements Listener {
         this.maxSteeringAngle = jsonCar.max_steering_angle;
 
         transformation.addModifiedListener(this);
-
         skipTransformationUpdate = false;
+        notifyListener();
 
         mesh.getSize(vector3fTmp);
         length = vector3fTmp.x;
@@ -56,7 +56,7 @@ public class Auto extends Objekt implements Listener {
         for(Sensor sensor : sensoren)
         {
             sensor.updatePosition(transformation);
-            sensor.ausfuehren(0);
+            sensor.ausfuehren(nanoseconds);
         }
     }
 

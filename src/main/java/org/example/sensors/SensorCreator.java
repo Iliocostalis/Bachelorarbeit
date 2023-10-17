@@ -15,7 +15,7 @@ public class SensorCreator {
             case "DISTANCE_SENSOR":
                 return new DistanceSensor(sensor, DataPackage.TYPE_DISTANCE_SENSOR);
             case "LIDAR":
-                return new KameraSensor(sensor, DataPackage.TYPE_LIDAR);
+                return new LiDARSensor(sensor, DataPackage.TYPE_LIDAR);
 
         }
         return null;

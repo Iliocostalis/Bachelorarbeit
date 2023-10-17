@@ -34,8 +34,10 @@ public class Main {
             long waitTime = waitNanos - (System.nanoTime() - startTime) + timeOffset;
             waitTime = Math.min(waitNanos, waitTime);
             waitTime = Math.max(0, waitTime);
+            System.out.println(waitTime);
 
             //wait
+            if(false)
             try {
                 Thread.sleep(waitTime/(1000*1000));
             } catch (InterruptedException e) {

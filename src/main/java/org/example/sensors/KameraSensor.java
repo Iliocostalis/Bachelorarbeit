@@ -86,7 +86,7 @@ public class KameraSensor extends Sensor {
     }
 
     @Override
-    public void ausfuehren(float vergangeneZeit)
+    public void ausfuehren(long nanos)
     {
         Renderer renderer = Renderer.getInstance();
         renderer.setKamera(kamera);
