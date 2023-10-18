@@ -78,7 +78,9 @@ public class Schnittstelle {
                     runSenden();
                 } catch (SocketException e) {
                     //return;
+                    System.out.println("Schnittstelle error");
                 } catch (IOException e) {
+                    System.out.println("Schnittstelle error");
                     //throw new RuntimeException(e);
                 }
             }
@@ -112,6 +114,8 @@ public class Schnittstelle {
             DataPackage dataPackage = queue.poll();
             if(dataPackage == null)
                 continue;
+
+            sensorPackageCounter[dataPackage.header[1]] -= 1;
 
             outputStream.write(dataPackage.header);
             outputStream.write(dataPackage.customData);

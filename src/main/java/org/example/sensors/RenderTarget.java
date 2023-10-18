@@ -46,8 +46,10 @@ public class RenderTarget {
         glBindTexture(GL_TEXTURE_2D, colorTexture);
 
         int format = getOpenGlFormat();
+        int internalFormat = getOpenGlInternalFormat();
+        int type = getOpenGlType();
 
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, 0);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -77,6 +79,18 @@ public class RenderTarget {
         };
     }
 
+    public int getOpenGlInternalFormat()
+    {
+        return switch (farben) {
+            case BLACK_WHITE -> GL_R8;
+            case RGB -> GL_RGB;
+            case BGR -> GL_BGR;
+            case DEPTH8 -> GL_R8;
+            case DEPTH16 -> GL_R16;
+            default -> GL_RGB;
+        };
+    }
+
     public int getOpenGlFormat()
     {
         return switch (farben) {
@@ -86,6 +100,18 @@ public class RenderTarget {
             case DEPTH8 -> GL_RED;
             case DEPTH16 -> GL_RED;
             default -> GL_RGB;
+        };
+    }
+
+    public int getOpenGlType()
+    {
+        return switch (farben) {
+            case BLACK_WHITE -> GL_UNSIGNED_BYTE;
+            case RGB -> GL_UNSIGNED_BYTE;
+            case BGR -> GL_UNSIGNED_BYTE;
+            case DEPTH8 -> GL_UNSIGNED_BYTE;
+            case DEPTH16 -> GL_UNSIGNED_SHORT;
+            default -> GL_UNSIGNED_BYTE;
         };
     }
 

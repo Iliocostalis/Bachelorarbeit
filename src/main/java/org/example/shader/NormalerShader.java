@@ -18,25 +18,22 @@ public class NormalerShader implements Shader {
             "layout(location = 1) uniform mat4 view;\n"+
             "layout(location = 2) uniform mat4 model;\n"+
             "out vec3 normals;\n"+
-            "out vec3 pos;\n"+
             "void main()\n"+
             "{\n"+
             "   vec4 position = model * vec4(vPos, 1.0);\n"+
             "   gl_Position = projection * view * position;\n"+
-            "   pos = vec3(position);\n"+
             "   normals = vNormals;\n"+
             "}";
 
     private final String fragmentShaderSource = "#version 460 core\n" +
             "layout(location = 3) uniform vec3 vColor;\n"+
             "in vec3 normals;\n"+
-            "in vec3 pos;\n"+
             "out vec4 FragColor;\n" +
             "\n" +
             "void main()\n" +
             "{\n" +
             "   vec3 lightPos = vec3(0.0, 10000, 0.0);\n"+
-            "   vec3 lightDir = normalize(lightPos - pos);\n"+
+            "   vec3 lightDir = normalize(lightPos);\n"+
             "   float diff = max(dot(normals, lightDir), 0.0);\n"+
             "   float diffuseScale = 0.7;\n"+
             "   float ambientStrength = 0.3;\n"+

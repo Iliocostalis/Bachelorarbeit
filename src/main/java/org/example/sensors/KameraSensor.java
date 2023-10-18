@@ -49,7 +49,19 @@ public class KameraSensor extends Sensor {
 
         ConstValues.intToByteArray(width, 0, dataPackage.customData);
         ConstValues.intToByteArray(height, 4, dataPackage.customData);
-        dataPackage.customData[8] = 0;
+        dataPackage.customData[8] = colorFormatToByte(renderTarget.getColorFormat());
+    }
+
+    private byte colorFormatToByte(RENDER_TARGET_COLOR_FORMAT colorFormat)
+    {
+        return switch (colorFormat)
+        {
+            case BLACK_WHITE -> DataPackage.COLOR_FORMAT_BW;
+            case RGB -> DataPackage.COLOR_FORMAT_RGB;
+            case BGR -> DataPackage.COLOR_FORMAT_BGR;
+            case DEPTH8 -> DataPackage.COLOR_FORMAT_D8;
+            case DEPTH16 -> DataPackage.COLOR_FORMAT_D16;
+        };
     }
 
     private RENDER_TARGET_COLOR_FORMAT getColorFormat(String colorFormat)
@@ -94,7 +106,7 @@ public class KameraSensor extends Sensor {
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, renderTarget.getFramebuffer());
         glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO);
-        glReadPixels(0,0, width, height, renderTarget.getOpenGlFormat(), GL_UNSIGNED_BYTE, 0);
+        glReadPixels(0,0, width, height, renderTarget.getOpenGlFormat(), renderTarget.getOpenGlType(), 0);
 
         byteBuffer = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY, imageSize, byteBuffer);
         if(byteBuffer != null)

@@ -13,34 +13,37 @@ public class Main {
 
         Fenster fenster = new Fenster();
         EnviromentLoader.loadMeshs();
-        Umgebung.umgebung = EnviromentLoader.loadEnviroment("env");
+        Umgebung.umgebung = EnviromentLoader.loadEnviroment("nxp");
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-        long timeOffset = 0;
-        long waitNanos = 10*1000*1000;
+
+        long waitTimePerUpdate = 2*1000*1000;
+        long updateCount = 0;
         long startTime = System.nanoTime();
+        long timeLastUpdate = System.nanoTime();
+
         while(fenster.istOffen())
         {
-            timeOffset = startTime + waitNanos - System.nanoTime();
-            long nanos = Math.min(System.nanoTime() - startTime, 100*1000*1000);
-            startTime = System.nanoTime();
+            long timeNow = System.nanoTime();
+            long deltaTime = timeNow - timeLastUpdate;
+            timeLastUpdate = timeNow;
 
             UserCommandOperator.update(reader);
 
-            Umgebung.umgebung.aktualisieren(nanos);
-            fenster.update(nanos);
+            Umgebung.umgebung.aktualisieren(deltaTime);
+            fenster.update(deltaTime);
 
-            long waitTime = waitNanos - (System.nanoTime() - startTime) + timeOffset;
-            waitTime = Math.min(waitNanos, waitTime);
-            waitTime = Math.max(0, waitTime);
-            System.out.println(waitTime);
+            updateCount += 1;
+            long endTimeNextUpdate = startTime + updateCount * waitTimePerUpdate;
+
+            if(updateCount % 500 == 0)
+                System.out.println("sec");
 
             //wait
-            if(false)
-            try {
-                Thread.sleep(waitTime/(1000*1000));
-            } catch (InterruptedException e) {
+            while(System.nanoTime() < endTimeNextUpdate)
+            {
+                Thread.onSpinWait();
             }
         }
 

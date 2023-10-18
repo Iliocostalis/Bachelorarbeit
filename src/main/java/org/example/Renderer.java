@@ -48,6 +48,7 @@ public class Renderer {
             case BGR:
                 kamera.bindMatrixToShader(normalerShader.getProgram());
                 kamera.bindMatrixToShader(texturShader.getProgram());
+                break;
             case DEPTH8:
             case DEPTH16:
                 kamera.bindMatrixToShader(depthShader.getProgram());

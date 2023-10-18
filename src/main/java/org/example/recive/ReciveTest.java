@@ -1,6 +1,8 @@
 package org.example.recive;
 
 import org.example.ConstValues;
+import org.example.sensors.DataPackage;
+import org.example.sensors.RENDER_TARGET_COLOR_FORMAT;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -116,7 +118,6 @@ public class ReciveTest {
         this.width = width;
         this.height = height;
         imageSize = width*height*3;
-        readSize = width*height*3 + 13;
         byteBuffer = BufferUtils.createByteBuffer(imageSize);
         image = new byte[imageSize];
 
@@ -124,10 +125,8 @@ public class ReciveTest {
     }
 
     int imageSize;
-    int readSize;
     ByteBuffer byteBuffer;
     byte[] image;
-    byte[] headerBuffer = new byte[13];
 
     private void loop() {
         // This line is critical for LWJGL's interoperation with GLFW's
@@ -151,6 +150,11 @@ public class ReciveTest {
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
+
+        DataPackage dataPackage = new DataPackage(32);
+        byte[] data = new byte[1];
+        byte[] dataTmp = new byte[1024*1024];
+
         long time = System.currentTimeMillis();
         while ( !glfwWindowShouldClose(window) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
@@ -159,36 +163,64 @@ public class ReciveTest {
                 if(is.available() != 0)
                 {
                     int read = 0;
-                    int readSize = 13;
+                    while(read < dataPackage.header.length)
+                        read += is.read(dataPackage.header, read, dataPackage.header.length - read);
 
+                    int type = dataPackage.header[0];
+                    int address = dataPackage.header[1];
+                    int readSize = ConstValues.byteArrayToInt(2, dataPackage.header);
+
+                    if(!(type == DataPackage.TYPE_2D_CAM || type == DataPackage.TYPE_3D_CAM))
+                    {
+                        read = 0;
+                        while(read < readSize)
+                            read += is.read(dataTmp, read, readSize - read);
+
+                        continue;
+                    }
+
+                    if(data.length != readSize)
+                        data = new byte[readSize];
+
+                    read = 0;
                     while(read < readSize)
-                        read += is.read(headerBuffer, read, readSize);
+                        read += is.read(data, read, readSize - read);
 
-                    readSize = ConstValues.byteArrayToInt(0, headerBuffer);
-                    int type = headerBuffer[4];
-                    int rWidth = ConstValues.byteArrayToInt(5, headerBuffer);
-                    int rHeight = ConstValues.byteArrayToInt(9, headerBuffer);
+                    int rWidth = ConstValues.byteArrayToInt(0, data);
+                    int rHeight = ConstValues.byteArrayToInt(4, data);
+                    int colorFormat = data[8];
 
                     if(rWidth != width || rHeight != height)
                     {
                         setWindowSize(rWidth, rHeight);
                     }
 
-                    while(read < readSize)
-                    {
-                        read += is.read(image, read-13, readSize - read);
-                    }
+                    if(type == DataPackage.TYPE_2D_CAM) {
 
-                    if(type == 11) // depth
-                    {
-                        for(int i = width*height*3-1, o = width*height-1; i >= 13; i-=3, o--)
+                        for(int i = 0; i < imageSize; i++)
                         {
-                            image[i] = image[o];
-                            image[i-1] = image[o];
-                            image[i-2] = image[o];
+                            image[i] = data[i+9];
                         }
                     }
+                    else if(type == DataPackage.TYPE_3D_CAM) {
 
+                        if(colorFormat == DataPackage.COLOR_FORMAT_D8)
+                        {
+                            for (int i = 0; i < width*height; i++) {
+                                image[i*3] = data[i+9];
+                                image[i*3+1] = data[i+9];
+                                image[i*3+2] = data[i+9];
+                            }
+                        }
+                        else if(colorFormat == DataPackage.COLOR_FORMAT_D16)
+                        {
+                            for (int i = 0; i < width*height; i++) {
+                                image[i*3] = data[i*2+10];
+                                image[i*3+1] = data[i*2+10];
+                                image[i*3+2] = data[i*2+10];
+                            }
+                        }
+                    }
 
                     byteBuffer.put(0, image, 0, imageSize);
                 }

@@ -1,9 +1,0 @@
-{
-    "name": "blender",
-    "enviroment": "blender_map",
-    "car_instance": {
-        "name": "default_car", 
-        "position": [0,0.1,0], 
-        "rotation": [0,0,0]
-    }
-}

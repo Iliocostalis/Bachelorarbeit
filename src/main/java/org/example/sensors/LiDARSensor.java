@@ -42,10 +42,12 @@ public class LiDARSensor extends Sensor {
 
         rotationTimeNano += nanos;
 
-        long nanosPerStep = (long)(1000*1000*1000 / samplingRate);
+        long nanosPerStep = (1000*1000*1000 / samplingRate);
         int steps = (int)(rotationTimeNano / nanosPerStep);
         rotationTimeNano -= steps * nanosPerStep;
         float degreesPerStep = (rotationsPerSec / samplingRate) * 360f;
+
+        System.out.println(steps);
 
         for(int i = 0; i < steps; i++)
         {

@@ -18,8 +18,6 @@ public class Umgebung {
     public Kamera kamera;
     private RenderTarget renderTarget;
 
-    private DistanceSensor distanceSensor;
-
     Umgebung(String sceneName)
     {
         this.sceneName = sceneName;
@@ -110,7 +108,5 @@ public class Umgebung {
 
         renderTarget.destroy();
         objekte.clear();
-
-        distanceSensor.destroy();
     }
 }

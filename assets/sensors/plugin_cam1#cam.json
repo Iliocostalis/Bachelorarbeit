@@ -1,9 +1,0 @@
-{
-    "name": "plugin_cam1#cam",
-    "type": "2DCAM",
-    "fov": 90,
-    "resolution_width": 720,
-    "resolution_height": 480,
-    "framerate": 30,
-    "color_format": "RGB"
-}
