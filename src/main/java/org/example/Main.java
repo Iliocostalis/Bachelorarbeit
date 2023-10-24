@@ -13,7 +13,7 @@ public class Main {
 
         Fenster fenster = new Fenster();
         EnviromentLoader.loadMeshs();
-        Umgebung.umgebung = EnviromentLoader.loadEnviroment("nxp");
+        Umgebung.umgebung = EnviromentLoader.loadEnviroment("fin");
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 

@@ -29,7 +29,7 @@ public class Kamera {
 
     public Kamera(RenderTarget renderTarget)
     {
-        this(renderTarget, 60f, 0.1f, 500f);
+        this(renderTarget, 60f, 0.1f, 2000f);
     }
 
     public Kamera(RenderTarget renderTarget, float fov, float zNear, float zFar)

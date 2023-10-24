@@ -50,9 +50,9 @@ public class Umgebung {
     {
         Renderer renderer = Renderer.getInstance();
 
-        tmp.x = 100;
-        tmp.y = 200;
-        tmp.z = -150;
+        tmp.x = 200;
+        tmp.y = 300;
+        tmp.z = -250;
 
         kamera.position.set(tmp);
         tmp.x = 0;
