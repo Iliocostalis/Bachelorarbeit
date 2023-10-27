@@ -2,10 +2,7 @@ package org.example;
 
 import org.example.sensors.Kamera;
 import org.example.sensors.RENDER_TARGET_COLOR_FORMAT;
-import org.example.shader.DepthShader;
-import org.example.shader.NormalerShader;
-import org.example.shader.ShaderTyp;
-import org.example.shader.TexturShader;
+import org.example.shader.*;
 import org.example.virtualEnvironment.Mesh;
 import org.example.virtualEnvironment.Objekt;
 
@@ -27,6 +24,8 @@ public class Renderer {
 
     NormalerShader normalerShader;
     TexturShader texturShader;
+    BlackWhiteTexturShader blackWhiteTexturShader;
+    BlackWhiteNormalShader blackWhiteNormalShader;
 
     DepthShader depthShader;
 
@@ -34,6 +33,8 @@ public class Renderer {
     {
         normalerShader = new NormalerShader();
         texturShader = new TexturShader();
+        blackWhiteTexturShader = new BlackWhiteTexturShader();
+        blackWhiteNormalShader = new BlackWhiteNormalShader();
         depthShader = new DepthShader();
     }
 
@@ -56,6 +57,8 @@ public class Renderer {
                 glUniform1f(4, kamera.getZFar());
                 break;
             case BLACK_WHITE:
+                kamera.bindMatrixToShader(blackWhiteNormalShader.getProgram());
+                kamera.bindMatrixToShader(blackWhiteTexturShader.getProgram());
                 break;
         }
     }
@@ -78,6 +81,10 @@ public class Renderer {
                 depthShader.draw(objekt, mesh);
                 break;
             case BLACK_WHITE:
+                if(mesh.getShaderTyp() == ShaderTyp.NORMAL)
+                    blackWhiteNormalShader.draw(objekt, mesh);
+                else
+                    blackWhiteTexturShader.draw(objekt, mesh);
                 break;
         }
     }

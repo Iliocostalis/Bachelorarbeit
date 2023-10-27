@@ -43,9 +43,9 @@ public class KameraSensor extends Sensor {
             jsonSensor.min_distance = 0.1f;
 
         if(type == DataPackage.TYPE_3D_CAM)
-            kamera = new Kamera(renderTarget, jsonSensor.fov, jsonSensor.min_distance*100, jsonSensor.max_distance*100);
+            kamera = new Kamera(renderTarget, jsonSensor.fov, jsonSensor.min_distance*100, jsonSensor.max_distance*100, true);
         else
-            kamera = new Kamera(renderTarget, jsonSensor.fov, 0.1f, 20000.f);
+            kamera = new Kamera(renderTarget, jsonSensor.fov, 0.1f, 20000.f, true);
 
         imageSize = width*height*renderTarget.byteProPixel();
 

@@ -7,13 +7,17 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class Main {
-    public static void main(String[] args) {
 
-        Schnittstelle.getInstance().start();
+    public static void main(String[] args)
+    {
+        StartConfiguration startConfiguration = new StartConfiguration();
+        startConfiguration.parseArgs(args);
 
-        Fenster fenster = new Fenster();
+        Schnittstelle.getInstance().start(startConfiguration.port);
+
+        Fenster fenster = new Fenster(startConfiguration.width, startConfiguration.height);
         EnviromentLoader.loadMeshs();
-        Umgebung.umgebung = EnviromentLoader.loadEnviroment("fin");
+        Umgebung.umgebung = EnviromentLoader.loadEnviroment(startConfiguration.startEnvironment);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -25,6 +29,8 @@ public class Main {
 
         while(fenster.istOffen())
         {
+            Schnittstelle.getInstance().signalContinueLoop();
+
             long timeNow = System.nanoTime();
             long deltaTime = timeNow - timeLastUpdate;
             timeLastUpdate = timeNow;
@@ -37,8 +43,8 @@ public class Main {
             updateCount += 1;
             long endTimeNextUpdate = startTime + updateCount * waitTimePerUpdate;
 
-            if(updateCount % 500 == 0)
-                System.out.println("sec");
+            //if(updateCount % 500 == 0)
+            //    System.out.println("sec");
 
             //wait
             while(System.nanoTime() < endTimeNextUpdate)

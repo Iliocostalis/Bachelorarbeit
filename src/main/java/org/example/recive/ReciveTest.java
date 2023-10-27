@@ -195,11 +195,22 @@ public class ReciveTest {
                         setWindowSize(rWidth, rHeight);
                     }
 
-                    if(type == DataPackage.TYPE_2D_CAM) {
-
-                        for(int i = 0; i < imageSize; i++)
+                    if(type == DataPackage.TYPE_2D_CAM)
+                    {
+                        if(colorFormat == DataPackage.COLOR_FORMAT_BW)
                         {
-                            image[i] = data[i+9];
+                            for (int i = 0; i < width*height; i++) {
+                                image[i*3] = data[i+9];
+                                image[i*3+1] = data[i+9];
+                                image[i*3+2] = data[i+9];
+                            }
+                        }
+                        else
+                        {
+                            for(int i = 0; i < imageSize; i++)
+                            {
+                                image[i] = data[i+9];
+                            }
                         }
                     }
                     else if(type == DataPackage.TYPE_3D_CAM) {

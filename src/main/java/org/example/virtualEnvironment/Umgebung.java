@@ -22,7 +22,7 @@ public class Umgebung {
     {
         this.sceneName = sceneName;
         renderTarget = new RenderTarget(720, 480, 0, RENDER_TARGET_COLOR_FORMAT.RGB);
-        kamera = new Kamera(renderTarget);
+        kamera = new Kamera(renderTarget, false);
     }
 
     public void aktualisieren(long nanoseconds)

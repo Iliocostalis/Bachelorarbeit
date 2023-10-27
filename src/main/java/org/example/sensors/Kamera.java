@@ -7,8 +7,7 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
-import static org.lwjgl.opengl.GL20.glUseProgram;
+import static org.lwjgl.opengl.GL20.*;
 
 public class Kamera {
 
@@ -18,27 +17,30 @@ public class Kamera {
 
     public Vector3f position = new Vector3f();
     public Vector3f lookAt = new Vector3f();
-    private Vector3f up = new Vector3f(0,1,0);
+    private Vector3f up = new Vector3f(0,1,0);;
 
     private float zNear;
     private float zFar;
     private float aspect;
     private float fov;
+    private boolean flipY;
 
     private RenderTarget renderTarget;
 
-    public Kamera(RenderTarget renderTarget)
+    public Kamera(RenderTarget renderTarget, boolean flipY)
     {
-        this(renderTarget, 60f, 0.1f, 2000f);
+        this(renderTarget, 60f, 0.1f, 2000f, flipY);
     }
 
-    public Kamera(RenderTarget renderTarget, float fov, float zNear, float zFar)
+    public Kamera(RenderTarget renderTarget, float fov, float zNear, float zFar, boolean flipY)
     {
         this.renderTarget = renderTarget;
         this.fov = fov;
         aspect = (float)renderTarget.getWidth() / (float)renderTarget.getHeight();
         this.zNear = zNear;
         this.zFar = zFar;
+        this.flipY = flipY;
+
         updatePerspective();
         view.lookAt(position, lookAt, up);
     }
@@ -46,6 +48,10 @@ public class Kamera {
     private void updatePerspective()
     {
         projection.perspective((float)Math.toRadians(fov) , aspect, zNear, zFar, true);
+        if(flipY)
+        {
+            projection.scale(1,-1,1);
+        }
     }
 
     public void updateMatrix(Vector3f position, Quaternionf quaternionf)
@@ -76,6 +82,11 @@ public class Kamera {
     public void bindMatrixToShader(int programmId)
     {
         glUseProgram(programmId);
+        if(flipY)
+            glFrontFace(GL_CW);
+        else
+            glFrontFace(GL_CCW);
+
         projection.get(matrixBuffer);
         glUniformMatrix4fv(0, false, matrixBuffer);
 

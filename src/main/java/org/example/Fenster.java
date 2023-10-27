@@ -22,7 +22,7 @@ public class Fenster {
 
     private long nanosecondsRemaining;
 
-    Fenster()
+    Fenster(int width, int height)
     {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
@@ -38,7 +38,7 @@ public class Fenster {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
         // Create the window
-        window = glfwCreateWindow(720, 480, "Hello World!", NULL, NULL);
+        window = glfwCreateWindow(width, height, "Hello World!", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 

@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.sensors.DataPackage;
 import org.example.sensors.Sensor;
+import org.example.virtualEnvironment.Umgebung;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Schnittstelle {
 
+    private final Object lock;
+
     private Thread thread;
     private static Schnittstelle schnittstelle;
 
@@ -25,14 +28,7 @@ public class Schnittstelle {
     private InputStream inputStream;
     private OutputStream outputStream;
 
-    int sendIndexBufferA;
-    int reciveIndexBufferA;
-
-    int sendIndexBufferB;
-    int reciveIndexBufferB;
-
-    boolean sending = false;
-    int sendingLength;
+    boolean sending;
 
     Queue<DataPackage> queue;
     int[] sensorPackageCounter;
@@ -52,9 +48,11 @@ public class Schnittstelle {
         queue = new ConcurrentLinkedQueue<>();
         sensorPackageCounter = new int[128];
         isRunning = new AtomicBoolean();
+        lock = new Object();
+        sending = false;
     }
 
-    public void start()
+    public void start(int port)
     {
         thread = new Thread(() -> {
             isRunning.set(true);
@@ -107,10 +105,35 @@ public class Schnittstelle {
         }
     }
 
-    public void runSenden() throws IOException {
-        //System.out.println("sending");
+    private void waitForMainThreadUpdate()
+    {
+        synchronized (lock) {
+            try {
+                lock.wait();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public void signalContinueLoop()
+    {
+        synchronized (lock) {
+            lock.notify();
+        }
+    }
+
+    public void runSenden() throws IOException
+    {
+        DataPackage dataPackageIn = new DataPackage(8);
+        byte[] dataTmp = new byte[1024];
+
         while(isRunning.get())
         {
+            if(inputStream.available() <= 0 && queue.isEmpty())
+                waitForMainThreadUpdate();
+
+            // send
             DataPackage dataPackage = queue.poll();
             if(dataPackage == null)
                 continue;
@@ -119,6 +142,39 @@ public class Schnittstelle {
 
             outputStream.write(dataPackage.header);
             outputStream.write(dataPackage.customData);
+
+            // receive
+            if(inputStream.available() > 0)
+            {
+                int read = 0;
+                while(read < dataPackageIn.header.length)
+                    read += inputStream.read(dataPackageIn.header, read, dataPackageIn.header.length - read);
+
+                int type = dataPackageIn.header[0];
+                int address = dataPackageIn.header[1];
+                int readSize = ConstValues.byteArrayToInt(2, dataPackageIn.header);
+
+                if(type == DataPackage.TYPE_CAR && readSize == 8)
+                {
+                    read = 0;
+                    while(read < readSize)
+                        read += inputStream.read(dataPackageIn.customData, read, readSize - read);
+
+                    float throttle = ConstValues.byteArrayToFloat(0, dataPackageIn.customData);
+                    float steeringAngle = ConstValues.byteArrayToFloat(4, dataPackageIn.customData);
+                    Umgebung.umgebung.auto.setSpeed(throttle);
+                    Umgebung.umgebung.auto.setSteeringAngle(steeringAngle);
+                }
+                else // wrong data -> skipp
+                {
+                    read = 0;
+                    while(read < readSize)
+                    {
+                        int bytesToRead = Math.min(readSize - read, dataTmp.length);
+                        read += inputStream.read(dataTmp, 0, bytesToRead);
+                    }
+                }
+            }
         }
     }
 
@@ -141,20 +197,6 @@ public class Schnittstelle {
                 throw new RuntimeException(e);
             }
         }*/
-    }
-
-    LinkedList<Sensor> sensoren;
-
-    public void sendeSensorDaten(Sensor sensor)
-    {
-        sensoren.add(sensor);
-    }
-
-    private void senden()
-    {
-        Sensor sensor = sensoren.pop();
-
-
     }
 
     public void senden(DataPackage dataPackage, int maxQueueCount)

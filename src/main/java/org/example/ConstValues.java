@@ -27,4 +27,17 @@ public class ConstValues {
         val |= ((int)array[offset + 3]) & 0xff;
         return val;
     }
+
+    public static void floatToByteArray(float value, int offset, byte[] array) {
+        ConstValues.intToByteArray(Float.floatToIntBits(value), 0, array);
+    }
+
+    public static float byteArrayToFloat(int offset, byte[] array) {
+        int val = 0;
+        val |= ((int)array[offset] << 24) & 0xff000000;
+        val |= ((int)array[offset + 1] << 16) & 0xff0000;
+        val |= ((int)array[offset + 2] << 8) & 0xff00;
+        val |= ((int)array[offset + 3]) & 0xff;
+        return Float.intBitsToFloat(val);
+    }
 }

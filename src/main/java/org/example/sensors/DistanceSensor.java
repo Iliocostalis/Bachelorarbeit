@@ -44,7 +44,7 @@ public class DistanceSensor extends Sensor {
         debugObject.transformation.setPosition(pos);
         Umgebung.umgebung.debugObjekte.add(debugObject);
 
-        ConstValues.intToByteArray(Float.floatToIntBits(distance / 100f), 0, dataPackage.customData);
+        ConstValues.floatToByteArray(distance / 100f, 0, dataPackage.customData);
         int maxQueueCount = 1 + samplingRate / 4;
         Schnittstelle.getInstance().senden(dataPackage, maxQueueCount);
     }
