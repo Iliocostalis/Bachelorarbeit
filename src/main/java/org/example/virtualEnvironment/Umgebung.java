@@ -56,7 +56,7 @@ public class Umgebung {
 
         kamera.position.set(tmp);
         tmp.x = 0;
-        tmp.y = 0;
+        tmp.y = -150;
         tmp.z = 0;
         kamera.lookAt.set(tmp);
         kamera.updateMatrix();
