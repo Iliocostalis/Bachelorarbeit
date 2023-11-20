@@ -38,8 +38,9 @@ public class BlackWhiteNormalShader implements Shader {
             "   float diffuseScale = 0.7;\n"+
             "   float ambientStrength = 0.3;\n"+
             "   float brightness = diff * diffuseScale + ambientStrength;\n"+
-            "   FragColor = brightness * vec4(vColor, 1.0);\n" +
-            "   FragColor.r = FragColor.r * 0.3 + FragColor.g * 0.59 + FragColor.b * 0.11;\n" +
+            "   finalColor = brightness * vColor;\n" +
+            "   FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" +
+            "   FragColor.r = finalColor.r * 0.3 + finalColor.g * 0.59 + finalColor.b * 0.11;\n" +
             "} ";
 
     private int shaderProgram;

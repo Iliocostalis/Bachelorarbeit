@@ -12,7 +12,7 @@ import static org.lwjgl.opengl.GL15.glUnmapBuffer;
 import static org.lwjgl.opengl.GL21.GL_PIXEL_PACK_BUFFER;
 import static org.lwjgl.opengl.GL40.*;
 
-public class KameraSensor extends Sensor {
+public class CameraSensor extends Sensor {
 
     private final int maxQueueCount = 4;
     private int width;
@@ -29,13 +29,13 @@ public class KameraSensor extends Sensor {
     private ByteBuffer byteBuffer;
 
     private RenderTarget renderTarget;
-    private Kamera kamera;
+    private Camera camera;
     private long sensorExecuteTime;
     private long totalTime;
     private long delayInNanos;
 
 
-    public KameraSensor(JsonSensor jsonSensor, byte type) {
+    public CameraSensor(JsonSensor jsonSensor, byte type) {
         super(jsonSensor, type);
 
         width = jsonSensor.resolution_width;
@@ -49,9 +49,9 @@ public class KameraSensor extends Sensor {
             jsonSensor.min_distance = 0.1f;
 
         if(type == DataPackage.TYPE_3D_CAM)
-            kamera = new Kamera(renderTarget, jsonSensor.fov, jsonSensor.min_distance*100, jsonSensor.max_distance*100, flipImageY);
+            camera = new Camera(renderTarget, jsonSensor.fov, jsonSensor.min_distance*100, jsonSensor.max_distance*100, flipImageY);
         else
-            kamera = new Kamera(renderTarget, jsonSensor.fov, 0.1f, 20000.f, flipImageY);
+            camera = new Camera(renderTarget, jsonSensor.fov, 0.1f, 20000.f, flipImageY);
 
         imageSize = width*height*renderTarget.byteProPixel();
 
@@ -102,7 +102,7 @@ public class KameraSensor extends Sensor {
     @Override
     public void updatePosition(Transformation transformationCar) {
         super.updatePosition(transformationCar);
-        kamera.updateMatrix(position, rotation);
+        camera.updateMatrix(position, rotation);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class KameraSensor extends Sensor {
             sensorExecuteTime += delayInNanos;
 
             Renderer renderer = Renderer.getInstance();
-            renderer.setKamera(kamera);
+            renderer.setKamera(camera);
             Environment.environment.draw();
 
             glBindFramebuffer(GL_READ_FRAMEBUFFER, renderTarget.getFramebuffer());
@@ -128,6 +128,9 @@ public class KameraSensor extends Sensor {
             sendImage();
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            //float distance = ((float)Byte.toUnsignedInt(dataPackage.customData[height*width/2 + width/2]) / 255.0f) * kamera.getZFar();
+            //System.out.println("Kamera distance: {}" + distance);
         }
     }
 

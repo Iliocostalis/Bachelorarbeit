@@ -12,6 +12,7 @@ public class DistanceSensor extends Sensor {
     int samplingRate;
     float fov;
     int sampleCountFov;
+    private byte address;
     private long sensorExecuteTime;
     private long totalTime;
     private long delayInNanos;
@@ -24,6 +25,7 @@ public class DistanceSensor extends Sensor {
         samplingRate = jsonSensor.sampling_rate;
         fov = jsonSensor.fov_distance_sensor * ConstValues.DEGREES_TO_RADIANS;
         sampleCountFov = jsonSensor.sample_count_fov;
+        address = jsonSensor.address;
 
         dataPackage = new DataPackage(4);
         dataPackage.setHeader(type, address);
@@ -69,6 +71,8 @@ public class DistanceSensor extends Sensor {
             sensorExecuteTime += delayInNanos;
 
             float distance = calculateDistance();
+            //if(address == 5)
+            //    System.out.println("Sensor distance: {}" + distance);
 
             ConstValues.floatToByteArray(distance / 100f, 0, dataPackage.customData);
             int maxQueueCount = 1 + samplingRate / 4;

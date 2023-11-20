@@ -15,13 +15,13 @@ public class Environment {
     public Auto auto;
     public ArrayList<VirtualObject> objects = new ArrayList<>();
     public ArrayList<VirtualObject> debugObjects = new ArrayList<>();
-    public Kamera kamera;
+    public Camera camera;
     private RenderTarget renderTarget;
 
     Environment(String sceneName) {
         this.sceneName = sceneName;
         renderTarget = new RenderTarget(720, 480, 0, RENDER_TARGET_COLOR_FORMAT.RGB);
-        kamera = new Kamera(renderTarget, false);
+        camera = new Camera(renderTarget, false);
     }
 
     public void update(long nanoseconds) {
@@ -44,17 +44,17 @@ public class Environment {
     public void visualize() {
         Renderer renderer = Renderer.getInstance();
 
-        kamera.position.x = 200;
-        kamera.position.y = 300;
-        kamera.position.z = -250;
+        camera.position.x = 200;
+        camera.position.y = 300;
+        camera.position.z = -250;
 
-        kamera.lookAt.x = 0;
-        kamera.lookAt.y = -150;
-        kamera.lookAt.z = 0;
+        camera.lookAt.x = 0;
+        camera.lookAt.y = -150;
+        camera.lookAt.z = 0;
 
-        kamera.updateMatrix();
+        camera.updateMatrix();
 
-        renderer.setKamera(kamera);
+        renderer.setKamera(camera);
 
         draw();
 

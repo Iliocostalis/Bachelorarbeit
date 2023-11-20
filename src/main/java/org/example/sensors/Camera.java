@@ -9,7 +9,7 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
 
-public class Kamera {
+public class Camera {
 
     private Matrix4f projection = new Matrix4f();
     private Matrix4f view = new Matrix4f();
@@ -27,11 +27,11 @@ public class Kamera {
 
     private RenderTarget renderTarget;
 
-    public Kamera(RenderTarget renderTarget, boolean flipY) {
+    public Camera(RenderTarget renderTarget, boolean flipY) {
         this(renderTarget, 60f, 0.1f, 2000f, flipY);
     }
 
-    public Kamera(RenderTarget renderTarget, float fov, float zNear, float zFar, boolean flipY) {
+    public Camera(RenderTarget renderTarget, float fov, float zNear, float zFar, boolean flipY) {
         this.renderTarget = renderTarget;
         this.fov = fov;
         aspect = (float)renderTarget.getWidth() / (float)renderTarget.getHeight();

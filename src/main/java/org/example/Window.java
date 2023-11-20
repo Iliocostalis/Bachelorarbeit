@@ -98,7 +98,7 @@ public class Window {
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glFrontFace(GL_CCW);
-        glEnable(GL_FRAMEBUFFER_SRGB);
+        //glEnable(GL_FRAMEBUFFER_SRGB);
     }
 
     void update(long nanoseconds) {
@@ -117,8 +117,7 @@ public class Window {
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
 
-        if(glfwWindowShouldClose(window))
-        {
+        if(glfwWindowShouldClose(window)) {
             close();
             return;
         }

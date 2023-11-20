@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.sensors.Kamera;
+import org.example.sensors.Camera;
 import org.example.sensors.RENDER_TARGET_COLOR_FORMAT;
 import org.example.shader.*;
 import org.example.virtualEnvironment.Mesh;
@@ -22,7 +22,7 @@ public class Renderer {
 
     RENDER_TARGET_COLOR_FORMAT colorFormat;
 
-    NormalerShader normalerShader;
+    NormalShader normalShader;
     TexturShader texturShader;
     BlackWhiteTexturShader blackWhiteTexturShader;
     BlackWhiteNormalShader blackWhiteNormalShader;
@@ -31,34 +31,34 @@ public class Renderer {
 
     Renderer()
     {
-        normalerShader = new NormalerShader();
+        normalShader = new NormalShader();
         texturShader = new TexturShader();
         blackWhiteTexturShader = new BlackWhiteTexturShader();
         blackWhiteNormalShader = new BlackWhiteNormalShader();
         depthShader = new DepthShader();
     }
 
-    public void setKamera(Kamera kamera)
+    public void setKamera(Camera camera)
     {
-        kamera.bindRenderTarget();
+        camera.bindRenderTarget();
 
-        colorFormat = kamera.getColorFormat();
+        colorFormat = camera.getColorFormat();
         switch (colorFormat)
         {
             case RGB:
             case BGR:
-                kamera.bindMatrixToShader(normalerShader.getProgram());
-                kamera.bindMatrixToShader(texturShader.getProgram());
+                camera.bindMatrixToShader(normalShader.getProgram());
+                camera.bindMatrixToShader(texturShader.getProgram());
                 break;
             case DEPTH8:
             case DEPTH16:
-                kamera.bindMatrixToShader(depthShader.getProgram());
-                glUniform3f(3, kamera.position.x, kamera.position.y, kamera.position.z);
-                glUniform1f(4, kamera.getZFar());
+                camera.bindMatrixToShader(depthShader.getProgram());
+                glUniform3f(3, camera.position.x, camera.position.y, camera.position.z);
+                glUniform1f(4, camera.getZFar());
                 break;
             case BLACK_WHITE:
-                kamera.bindMatrixToShader(blackWhiteNormalShader.getProgram());
-                kamera.bindMatrixToShader(blackWhiteTexturShader.getProgram());
+                camera.bindMatrixToShader(blackWhiteNormalShader.getProgram());
+                camera.bindMatrixToShader(blackWhiteTexturShader.getProgram());
                 break;
         }
     }
@@ -72,7 +72,7 @@ public class Renderer {
             case RGB:
             case BGR:
                 if(mesh.getShaderTyp() == ShaderTyp.BASIC)
-                    normalerShader.draw(virtualObject, mesh);
+                    normalShader.draw(virtualObject, mesh);
                 else
                     texturShader.draw(virtualObject, mesh);
                 break;

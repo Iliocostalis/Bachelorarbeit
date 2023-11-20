@@ -9,7 +9,7 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.GL40.*;
 
 
-public class NormalerShader implements Shader {
+public class NormalShader implements Shader {
 
     private final String vertexShaderSource = "#version 460 core\n" +
             "layout (location = 0) in vec3 vPos;\n"+
@@ -38,14 +38,15 @@ public class NormalerShader implements Shader {
             "   float diffuseScale = 0.7;\n"+
             "   float ambientStrength = 0.3;\n"+
             "   float brightness = diff * diffuseScale + ambientStrength;\n"+
-            "   FragColor = brightness * vec4(vColor, 1.0);\n" +
+            "   vec3 finalColor = brightness * vColor;\n" +
+            "   FragColor = vec4(pow(finalColor, vec3(1.0/2.2)), 1.0);\n" +
             "} ";
 
     private int shaderProgram;
 
     private FloatBuffer matrixBuffer;
 
-    public NormalerShader() {
+    public NormalShader() {
         matrixBuffer = BufferUtils.createFloatBuffer(16);
 
         int vertexShader;

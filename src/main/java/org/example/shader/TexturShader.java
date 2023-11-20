@@ -43,7 +43,8 @@ public class TexturShader implements Shader {
             "   float diffuseScale = 0.7;\n"+
             "   float ambientStrength = 0.3;\n"+
             "   float brightness = diff * diffuseScale + ambientStrength;\n"+
-            "   FragColor = brightness * texture(ourTexture, texCoord);\n" +
+            "   vec3 finalColor = brightness * vec3(texture(ourTexture, texCoord));\n" +
+            "   FragColor = vec4(pow(finalColor, vec3(1.0/2.2)), 1.0);\n" +
             "} ";
 
     private int shaderProgram;

@@ -43,8 +43,10 @@ public class BlackWhiteTexturShader implements Shader {
             "   float diffuseScale = 0.7;\n"+
             "   float ambientStrength = 0.3;\n"+
             "   float brightness = diff * diffuseScale + ambientStrength;\n"+
-            "   FragColor = brightness * texture(ourTexture, texCoord);\n" +
-            "   FragColor.r = FragColor.r * 0.3 + FragColor.g * 0.59 + FragColor.b * 0.11;\n" +
+            "   vec3 finalColor = brightness * vec3(texture(ourTexture, texCoord));\n" +
+            "   finalColor = pow(finalColor, vec3(1.0/2.2));\n" +
+            "   FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" +
+            "   FragColor.r = finalColor.r * 0.3 + finalColor.g * 0.59 + finalColor.b * 0.11;\n" +
             "} ";
 
     private int shaderProgram;
