@@ -1,7 +1,7 @@
 package org.example.shader;
 
 import org.example.virtualEnvironment.Mesh;
-import org.example.virtualEnvironment.Objekt;
+import org.example.virtualEnvironment.VirtualObject;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -100,10 +100,10 @@ public class DepthShader implements Shader {
     }
 
     @Override
-    public void draw(Objekt objekt, Mesh mesh) {
+    public void draw(VirtualObject virtualObject, Mesh mesh) {
         glUseProgram(shaderProgram);
 
-        objekt.transformation.getMatrix().get(matrixBuffer);
+        virtualObject.transformation.getMatrix().get(matrixBuffer);
 
         glBindVertexArray(mesh.getVAO());
         glUniformMatrix4fv(2, false, matrixBuffer);

@@ -1,20 +1,19 @@
 package org.example.virtualEnvironment;
 
-import org.example.ConstValues;
 import org.example.Listener;
 import org.example.VectorMatrixPool;
-import org.example.jsonClasses.JsonCarNew;
+import org.example.jsonClasses.JsonCar;
 import org.example.sensors.Sensor;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public class Auto extends Objekt implements Listener {
+public class Auto extends VirtualObject implements Listener {
 
     //Default direction -> X+
 
-    public ArrayList<Sensor> sensoren;
+    public ArrayList<Sensor> sensors;
     private Vector3f currentDirection = new Vector3f(1,0,0);
     private Vector3f direction = new Vector3f(1,0,0);
     private Vector3f directionFront = new Vector3f(1,0,0);
@@ -28,10 +27,9 @@ public class Auto extends Objekt implements Listener {
 
     private boolean skipTransformationUpdate;
 
-    public Auto(JsonCarNew jsonCar, ArrayList<Sensor> sensoren)
-    {
+    public Auto(JsonCar jsonCar, ArrayList<Sensor> sensors) {
         super(jsonCar.object);
-        this.sensoren = sensoren;
+        this.sensors = sensors;
         this.maxSpeed = jsonCar.max_speed;
         this.maxSteeringAngle = jsonCar.max_steering_angle;
         this.wheelbase = jsonCar.wheelbase;
@@ -41,19 +39,16 @@ public class Auto extends Objekt implements Listener {
         notifyListener();
     }
 
-    public void update(long nanoseconds)
-    {
+    public void update(long nanoseconds) {
         move(((float)nanoseconds) / (1000*1000*1000));
 
-        for(Sensor sensor : sensoren)
-        {
+        for(Sensor sensor : sensors) {
             sensor.updatePosition(transformation);
-            sensor.ausfuehren(nanoseconds);
+            sensor.execute(nanoseconds);
         }
     }
 
-    private void moveForward(float distance)
-    {
+    private void moveForward(float distance) {
         //calculate front /back from direction and position
         Vector3f halfCarLength = VectorMatrixPool.getVector3f();
         currentDirection.mul(wheelbase*0.5f, halfCarLength);
@@ -93,10 +88,10 @@ public class Auto extends Objekt implements Listener {
     }
 
 
-    private void move(float deltaTime)
-    {
+    private void move(float deltaTime) {
         skipTransformationUpdate = true;
 
+        // Step 1 // car drives to slow in curves -> more steps approach the target speed better
         Vector3f positionStart = VectorMatrixPool.getVector3f();
         positionStart.set(transformation.getPosition());
 
@@ -109,7 +104,7 @@ public class Auto extends Objekt implements Listener {
         float distanceMoved = positionStart.distance(positionNew);
         float diff = Math.max(distance - distanceMoved, 0.0f);
 
-        // Step 2 // car drives to slow in curves -> more steps approach the target speed better
+        // Step 2
         distance = diff;
         positionStart.set(transformation.getPosition());
         moveForward(distance);
@@ -128,19 +123,16 @@ public class Auto extends Objekt implements Listener {
         skipTransformationUpdate = false;
     }
 
-    public void destroy()
-    {
-        for(Sensor sensor : sensoren)
+    public void destroy() {
+        for(Sensor sensor : sensors)
             sensor.destroy();
     }
 
-    public void setSpeed(float value)
-    {
+    public void setSpeed(float value) {
         speed = Math.max(-1.0f, Math.min(1.0f, value));
     }
 
-    public void setSteeringAngle(float value)
-    {
+    public void setSteeringAngle(float value) {
         steeringAngle = Math.max(-1.0f, Math.min(1.0f, value));
     }
 

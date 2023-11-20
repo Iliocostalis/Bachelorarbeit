@@ -1,13 +1,11 @@
 package org.example.sensors;
 
-import org.example.jsonClasses.JsonSensorNew;
+import org.example.jsonClasses.JsonSensor;
 
 public class SensorCreator {
 
-    public static Sensor create(JsonSensorNew sensor)
-    {
-        switch(sensor.type)
-        {
+    public static Sensor create(JsonSensor sensor) {
+        switch(sensor.type) {
             case "2D_CAM":
                 return new KameraSensor(sensor, DataPackage.TYPE_2D_CAM);
             case "3D_CAM":

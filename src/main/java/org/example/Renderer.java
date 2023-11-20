@@ -4,7 +4,7 @@ import org.example.sensors.Kamera;
 import org.example.sensors.RENDER_TARGET_COLOR_FORMAT;
 import org.example.shader.*;
 import org.example.virtualEnvironment.Mesh;
-import org.example.virtualEnvironment.Objekt;
+import org.example.virtualEnvironment.VirtualObject;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -63,28 +63,28 @@ public class Renderer {
         }
     }
 
-    public void draw(Objekt objekt)
+    public void draw(VirtualObject virtualObject)
     {
-        Mesh mesh = objekt.mesh;
+        Mesh mesh = virtualObject.mesh;
 
         switch (colorFormat)
         {
             case RGB:
             case BGR:
-                if(mesh.getShaderTyp() == ShaderTyp.NORMAL)
-                    normalerShader.draw(objekt, mesh);
+                if(mesh.getShaderTyp() == ShaderTyp.BASIC)
+                    normalerShader.draw(virtualObject, mesh);
                 else
-                    texturShader.draw(objekt, mesh);
+                    texturShader.draw(virtualObject, mesh);
                 break;
             case DEPTH8:
             case DEPTH16:
-                depthShader.draw(objekt, mesh);
+                depthShader.draw(virtualObject, mesh);
                 break;
             case BLACK_WHITE:
-                if(mesh.getShaderTyp() == ShaderTyp.NORMAL)
-                    blackWhiteNormalShader.draw(objekt, mesh);
+                if(mesh.getShaderTyp() == ShaderTyp.BASIC)
+                    blackWhiteNormalShader.draw(virtualObject, mesh);
                 else
-                    blackWhiteTexturShader.draw(objekt, mesh);
+                    blackWhiteTexturShader.draw(virtualObject, mesh);
                 break;
         }
     }

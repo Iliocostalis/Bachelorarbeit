@@ -1,9 +1,9 @@
 package org.example.shader;
 
 import org.example.virtualEnvironment.Mesh;
-import org.example.virtualEnvironment.Objekt;
+import org.example.virtualEnvironment.VirtualObject;
 
 public interface Shader {
-    void draw(Objekt objekt, Mesh mesh);
+    void draw(VirtualObject virtualObject, Mesh mesh);
     int getProgram();
 }

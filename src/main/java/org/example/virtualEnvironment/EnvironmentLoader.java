@@ -15,9 +15,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EnviromentLoader {
+public class EnvironmentLoader {
 
-    private static Map<String, Mesh> meshs;
+    private static Map<String, Mesh> meshes;
 
     public static String getFilenameWithoutExtension(Path path) {
         String fileName = path.getFileName().toString();
@@ -52,21 +52,19 @@ public class EnviromentLoader {
         }
     }
 
-    public static void loadMeshs()
-    {
-        if(meshs == null)
-            meshs = new HashMap<>();
+    public static void loadMeshes() {
+        if(meshes == null)
+            meshes = new HashMap<>();
 
         try {
-            List<Path> files = getFilesInFolder("meshs");
+            List<Path> files = getFilesInFolder("meshes");
 
             Gson g = new Gson();
-            for(Path path : files)
-            {
+            for(Path path : files) {
                 String file = readFile(path);
-                JsonObjectNew jsonObject = g.fromJson(file, JsonObjectNew.class);
+                JsonObject jsonObject = g.fromJson(file, JsonObject.class);
 
-                meshs.put(getFilenameWithoutExtension(path), new Mesh(jsonObject));
+                meshes.put(getFilenameWithoutExtension(path), new Mesh(jsonObject));
             }
 
         } catch (IOException e) {
@@ -74,14 +72,12 @@ public class EnviromentLoader {
         }
     }
 
-    public static Objekt getObjekt(String name)
-    {
-        return new Objekt(meshs.get(name));
+    public static VirtualObject getVirtualObject(String name) {
+        return new VirtualObject(meshes.get(name));
     }
 
-    public static Umgebung loadEnviroment(String name)
-    {
-        Umgebung umgebung = new Umgebung(name);
+    public static Environment loadEnvironment(String name) {
+        Environment environment = new Environment(name);
 
         try {
             Path path = Paths.get("assets", name + ".json");
@@ -95,32 +91,28 @@ public class EnviromentLoader {
             JsonAll jsonAll = g.fromJson(file, JsonAll.class);
 
             ArrayList<Sensor> sensoren = new ArrayList<>();
-            for(JsonSensorNew jsonSensor : jsonAll.car.sensors)
-            {
+            for(JsonSensor jsonSensor : jsonAll.car.sensors) {
                 Sensor sensor = SensorCreator.create(jsonSensor);
                 if(sensor != null)
                     sensoren.add(sensor);
             }
 
-            umgebung.auto = new Auto(jsonAll.car, sensoren);
+            environment.auto = new Auto(jsonAll.car, sensoren);
 
-            for(JsonObjectNew jsonObject : jsonAll.objects)
-            {
-                umgebung.objekte.add(new Objekt(jsonObject));
-            }
+            for(JsonObject jsonObject : jsonAll.objects)
+                environment.objects.add(new VirtualObject(jsonObject));
 
         } catch (IOException e) {
             System.out.println("Error while loading environment!");
         }
 
-        return umgebung;
+        return environment;
     }
 
-    public static void destroyMeshs()
-    {
-        for(Mesh mesh : meshs.values())
+    public static void destroyMeshes() {
+        for(Mesh mesh : meshes.values())
             mesh.destroy();
 
-        meshs.clear();
+        meshes.clear();
     }
 }

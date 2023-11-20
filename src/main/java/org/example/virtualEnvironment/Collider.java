@@ -10,26 +10,24 @@ public class Collider implements Listener {
 
     Vector3f intersectingPosition;
 
-    Objekt objekt;
+    VirtualObject virtualObject;
 
     Vector3f boundingBoxMin;
     Vector3f boundingBoxMax;
 
     boolean isBoundingSphereOk = false;
 
-    public Collider(Objekt objekt)
-    {
-        this.objekt = objekt;
+    public Collider(VirtualObject virtualObject) {
+        this.virtualObject = virtualObject;
         intersectingPosition = new Vector3f();
         boundingBoxMin = new Vector3f();
         boundingBoxMax = new Vector3f();
 
-        objekt.transformation.addModifiedListener(this);
+        virtualObject.transformation.addModifiedListener(this);
     }
 
 
-    public boolean isRayIntersecting(Vector3f rayOrigin, Vector3f rayDirection)
-    {
+    public boolean isRayIntersecting(Vector3f rayOrigin, Vector3f rayDirection) {
         if(!isBoundingSphereOk)
             calculateBoundingSphere();
 
@@ -58,20 +56,18 @@ public class Collider implements Listener {
         tmax = Math.min(tmax, Math.max(tz1, tz2));
 
         boolean hit = tmax >= Math.max(0.0, tmin) && tmin >= 0;
-        if(hit)
-        {
+        if(hit) {
             return exactCollision(rayOrigin, rayDirection);
         }
 
         return false;
     }
 
-    private boolean exactCollision(Vector3f rayOrigin, Vector3f rayDirection)
-    {
-        Mesh mesh = objekt.mesh;
+    private boolean exactCollision(Vector3f rayOrigin, Vector3f rayDirection) {
+        Mesh mesh = virtualObject.mesh;
 
         Matrix4f matrixInverted = VectorMatrixPool.getMatrix4f();
-        objekt.transformation.getMatrix().invert(matrixInverted);
+        virtualObject.transformation.getMatrix().invert(matrixInverted);
 
         Vector3f rayOriginTransformed = VectorMatrixPool.getVector3f();
         Vector3f rayDirectionTransformed = VectorMatrixPool.getVector3f();
@@ -187,36 +183,33 @@ public class Collider implements Listener {
 
 
             // convert position back
-            intersectingPosition.mulPosition(objekt.transformation.getMatrix());
+            intersectingPosition.mulPosition(virtualObject.transformation.getMatrix());
             return true; // this ray hits the triangle
         }
 
         return false;
     }
 
-    public Vector3fc getIntersectionPosition()
-    {
+    public Vector3fc getIntersectionPosition() {
         return intersectingPosition;
     }
 
-    private void calculateBoundingSphere()
-    {
+    private void calculateBoundingSphere() {
         isBoundingSphereOk = true;
 
-        Mesh mesh = objekt.mesh;
+        Mesh mesh = virtualObject.mesh;
 
         boundingBoxMin.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
         boundingBoxMax.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
 
         Vector3f vector3f = VectorMatrixPool.getVector3f();
 
-        for(int i = 0; i < mesh.vertices.length; i+=3)
-        {
+        for(int i = 0; i < mesh.vertices.length; i+=3) {
             vector3f.x = mesh.vertices[i];
             vector3f.y = mesh.vertices[i+1];
             vector3f.z = mesh.vertices[i+2];
 
-            vector3f.mulPosition(objekt.transformation.getMatrix());
+            vector3f.mulPosition(virtualObject.transformation.getMatrix());
 
             boundingBoxMin.x = Math.min(boundingBoxMin.x, vector3f.x);
             boundingBoxMin.y = Math.min(boundingBoxMin.y, vector3f.y);

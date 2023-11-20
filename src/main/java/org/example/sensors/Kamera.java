@@ -17,7 +17,7 @@ public class Kamera {
 
     public Vector3f position = new Vector3f();
     public Vector3f lookAt = new Vector3f();
-    private Vector3f up = new Vector3f(0,1,0);;
+    private Vector3f up = new Vector3f(0,1,0);
 
     private float zNear;
     private float zFar;
@@ -27,13 +27,11 @@ public class Kamera {
 
     private RenderTarget renderTarget;
 
-    public Kamera(RenderTarget renderTarget, boolean flipY)
-    {
+    public Kamera(RenderTarget renderTarget, boolean flipY) {
         this(renderTarget, 60f, 0.1f, 2000f, flipY);
     }
 
-    public Kamera(RenderTarget renderTarget, float fov, float zNear, float zFar, boolean flipY)
-    {
+    public Kamera(RenderTarget renderTarget, float fov, float zNear, float zFar, boolean flipY) {
         this.renderTarget = renderTarget;
         this.fov = fov;
         aspect = (float)renderTarget.getWidth() / (float)renderTarget.getHeight();
@@ -45,8 +43,7 @@ public class Kamera {
         view.lookAt(position, lookAt, up);
     }
 
-    private void updatePerspective()
-    {
+    private void updatePerspective() {
         projection.perspective((float)Math.toRadians(fov) , aspect, zNear, zFar, true);
         if(flipY)
         {
@@ -54,8 +51,7 @@ public class Kamera {
         }
     }
 
-    public void updateMatrix(Vector3f position, Quaternionf quaternionf)
-    {
+    public void updateMatrix(Vector3f position, Quaternionf quaternionf) {
         this.position.set(position);
         quaternionf.transform(1,0,0,lookAt);
         lookAt.add(position);
@@ -63,25 +59,21 @@ public class Kamera {
         updateMatrix();
     }
 
-    public void updateMatrix()
-    {
+    public void updateMatrix() {
         view.identity();
         view.lookAt(position, lookAt, up);
     }
 
-    public RENDER_TARGET_COLOR_FORMAT getColorFormat()
-    {
+    public RENDER_TARGET_COLOR_FORMAT getColorFormat() {
         return renderTarget.getColorFormat();
     }
 
-    public void bindRenderTarget()
-    {
+    public void bindRenderTarget() {
         renderTarget.bind();
     }
 
-    public void bindMatrixToShader(int programmId)
-    {
-        glUseProgram(programmId);
+    public void bindMatrixToShader(int programId) {
+        glUseProgram(programId);
         if(flipY)
             glFrontFace(GL_CW);
         else
@@ -94,23 +86,19 @@ public class Kamera {
         glUniformMatrix4fv(1, false, matrixBuffer);
     }
 
-    public float getZNear()
-    {
+    public float getZNear() {
         return zNear;
     }
 
-    public float getZFar()
-    {
+    public float getZFar() {
         return zFar;
     }
 
-    public float getAspect()
-    {
+    public float getAspect() {
         return aspect;
     }
 
-    public float getFov()
-    {
+    public float getFov() {
         return fov;
     }
 }

@@ -1,7 +1,6 @@
 package org.example;
 
-import org.example.virtualEnvironment.Auto;
-import org.example.virtualEnvironment.Umgebung;
+import org.example.virtualEnvironment.Environment;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -15,15 +14,14 @@ import static org.lwjgl.opengl.GL40.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class Fenster {
+public class Window {
 
     private final long window;
-    private boolean offen;
+    private boolean isOpen;
 
     private long nanosecondsRemaining;
 
-    Fenster(int width, int height)
-    {
+    Window(int width, int height) {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
@@ -48,22 +46,22 @@ public class Fenster {
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 
             if(key == GLFW_KEY_W && action == GLFW_PRESS)
-                Umgebung.umgebung.auto.setSpeed(1f);
+                Environment.environment.auto.setSpeed(1f);
             if(key == GLFW_KEY_S && action == GLFW_PRESS)
-                Umgebung.umgebung.auto.setSpeed(-1f);
+                Environment.environment.auto.setSpeed(-1f);
             if(key == GLFW_KEY_W && action == GLFW_RELEASE)
-                Umgebung.umgebung.auto.setSpeed(0f);
+                Environment.environment.auto.setSpeed(0f);
             if(key == GLFW_KEY_S && action == GLFW_RELEASE)
-                Umgebung.umgebung.auto.setSpeed(0f);
+                Environment.environment.auto.setSpeed(0f);
 
             if(key == GLFW_KEY_D && action == GLFW_PRESS)
-                Umgebung.umgebung.auto.setSteeringAngle(-1f);
+                Environment.environment.auto.setSteeringAngle(-1f);
             if(key == GLFW_KEY_A && action == GLFW_PRESS)
-                Umgebung.umgebung.auto.setSteeringAngle(1f);
+                Environment.environment.auto.setSteeringAngle(1f);
             if(key == GLFW_KEY_A && action == GLFW_RELEASE)
-                Umgebung.umgebung.auto.setSteeringAngle(0f);
+                Environment.environment.auto.setSteeringAngle(0f);
             if(key == GLFW_KEY_D && action == GLFW_RELEASE)
-                Umgebung.umgebung.auto.setSteeringAngle(0f);
+                Environment.environment.auto.setSteeringAngle(0f);
         });
 
         // Get the thread stack and push a new frame
@@ -93,7 +91,7 @@ public class Fenster {
         // Make the window visible
         glfwShowWindow(window);
 
-        offen = true;
+        isOpen = true;
 
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
@@ -103,12 +101,11 @@ public class Fenster {
         glEnable(GL_FRAMEBUFFER_SRGB);
     }
 
-    void update(long nanoseconds)
-    {
-        if(!offen)
+    void update(long nanoseconds) {
+        if(!isOpen)
             return;
 
-        long nanosecondDelay = 17*1000*1000;
+        long nanosecondDelay = 16666*1000; // update window 60 times per second
         nanosecondsRemaining -= nanoseconds;
 
         if(nanosecondsRemaining > 0)
@@ -122,13 +119,11 @@ public class Fenster {
 
         if(glfwWindowShouldClose(window))
         {
-            schließen();
+            close();
             return;
         }
 
-
-
-        Umgebung.umgebung.visualisieren();
+        Environment.environment.visualize();
 
         glfwSwapBuffers(window); // swap the color buffers
 
@@ -137,8 +132,7 @@ public class Fenster {
         glfwPollEvents();
     }
 
-    void schließen()
-    {
+    void close() {
         glFlush();
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
@@ -147,11 +141,10 @@ public class Fenster {
         glfwTerminate();
         glfwSetErrorCallback(null).free();
 
-        offen = false;
+        isOpen = false;
     }
 
-    public boolean istOffen()
-    {
-        return offen;
+    public boolean isOpen() {
+        return this.isOpen;
     }
 }

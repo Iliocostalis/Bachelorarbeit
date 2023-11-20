@@ -1,24 +1,24 @@
 package org.example.virtualEnvironment;
 
-import org.example.jsonClasses.JsonObjectNew;
+import org.example.jsonClasses.JsonObject;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-public class Objekt {
+public class VirtualObject {
     public Transformation transformation;
 
     public Mesh mesh;
 
     private Collider collider;
 
-    public Objekt(Mesh mesh)
+    public VirtualObject(Mesh mesh)
     {
         this.mesh = mesh;
         transformation = new Transformation();
         collider = new Collider(this);
     }
 
-    public Objekt(JsonObjectNew jsonObjekt)
+    public VirtualObject(JsonObject jsonObjekt)
     {
         mesh = new Mesh(jsonObjekt);
         transformation = new Transformation(jsonObjekt);

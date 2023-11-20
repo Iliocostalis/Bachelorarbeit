@@ -1,7 +1,7 @@
 package org.example;
 
-import org.example.virtualEnvironment.EnviromentLoader;
-import org.example.virtualEnvironment.Umgebung;
+import org.example.virtualEnvironment.EnvironmentLoader;
+import org.example.virtualEnvironment.Environment;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,8 +31,8 @@ public class UserCommandOperator {
     private static void reload(String[] split)
     {
         var time = System.currentTimeMillis();
-        Umgebung.umgebung.destroy();
-        Umgebung.umgebung = EnviromentLoader.loadEnviroment(Umgebung.umgebung.sceneName);
+        Environment.environment.destroy();
+        Environment.environment = EnvironmentLoader.loadEnvironment(Environment.environment.sceneName);
         System.out.println(System.currentTimeMillis()-time);
     }
 
@@ -45,8 +45,8 @@ public class UserCommandOperator {
         }
 
         var time = System.currentTimeMillis();
-        Umgebung.umgebung.destroy();
-        Umgebung.umgebung = EnviromentLoader.loadEnviroment(split[1]);
+        Environment.environment.destroy();
+        Environment.environment = EnvironmentLoader.loadEnvironment(split[1]);
         System.out.println(System.currentTimeMillis()-time);
     }
 }

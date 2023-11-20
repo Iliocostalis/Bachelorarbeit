@@ -1,7 +1,7 @@
 package org.example;
 
-import org.example.virtualEnvironment.EnviromentLoader;
-import org.example.virtualEnvironment.Umgebung;
+import org.example.virtualEnvironment.EnvironmentLoader;
+import org.example.virtualEnvironment.Environment;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,9 +15,9 @@ public class Main {
 
         Schnittstelle.getInstance().start(startConfiguration.port);
 
-        Fenster fenster = new Fenster(startConfiguration.width, startConfiguration.height);
-        EnviromentLoader.loadMeshs();
-        Umgebung.umgebung = EnviromentLoader.loadEnviroment(startConfiguration.startEnvironment);
+        Window window = new Window(startConfiguration.width, startConfiguration.height);
+        EnvironmentLoader.loadMeshes();
+        Environment.environment = EnvironmentLoader.loadEnvironment(startConfiguration.startEnvironment);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -27,7 +27,7 @@ public class Main {
         long startTime = System.nanoTime();
         long timeLastUpdate = System.nanoTime();
 
-        while(fenster.istOffen())
+        while(window.isOpen())
         {
             Schnittstelle.getInstance().signalContinueLoop();
 
@@ -37,8 +37,8 @@ public class Main {
 
             UserCommandOperator.update(reader);
 
-            Umgebung.umgebung.aktualisieren(deltaTime);
-            fenster.update(deltaTime);
+            Environment.environment.update(deltaTime);
+            window.update(deltaTime);
 
             updateCount += 1;
             long endTimeNextUpdate = startTime + updateCount * waitTimePerUpdate;

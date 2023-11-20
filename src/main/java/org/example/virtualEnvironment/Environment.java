@@ -7,38 +7,33 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public class Umgebung {
-    public static Umgebung umgebung;
+public class Environment {
+    public static Environment environment;
 
     public String sceneName;
 
     public Auto auto;
-    public ArrayList<Objekt> objekte = new ArrayList<>();
-    public ArrayList<Objekt> debugObjekte = new ArrayList<>();
+    public ArrayList<VirtualObject> objects = new ArrayList<>();
+    public ArrayList<VirtualObject> debugObjects = new ArrayList<>();
     public Kamera kamera;
     private RenderTarget renderTarget;
 
-    Umgebung(String sceneName)
-    {
+    Environment(String sceneName) {
         this.sceneName = sceneName;
         renderTarget = new RenderTarget(720, 480, 0, RENDER_TARGET_COLOR_FORMAT.RGB);
         kamera = new Kamera(renderTarget, false);
     }
 
-    public void aktualisieren(long nanoseconds)
-    {
+    public void update(long nanoseconds) {
         VectorMatrixPool.returnAll();
         if(auto != null)
             auto.update(nanoseconds);
     }
 
-    Vector3f tmp = new Vector3f();
-
-    public void draw()
-    {
+    public void draw() {
         Renderer renderer = Renderer.getInstance();
 
-        for (Objekt o : objekte) {
+        for (VirtualObject o : objects) {
             renderer.draw(o);
         }
 
@@ -46,34 +41,30 @@ public class Umgebung {
             renderer.draw(auto);
     }
 
-    public void visualisieren()
-    {
+    public void visualize() {
         Renderer renderer = Renderer.getInstance();
 
-        tmp.x = 200;
-        tmp.y = 300;
-        tmp.z = -250;
+        kamera.position.x = 200;
+        kamera.position.y = 300;
+        kamera.position.z = -250;
 
-        kamera.position.set(tmp);
-        tmp.x = 0;
-        tmp.y = -150;
-        tmp.z = 0;
-        kamera.lookAt.set(tmp);
+        kamera.lookAt.x = 0;
+        kamera.lookAt.y = -150;
+        kamera.lookAt.z = 0;
+
         kamera.updateMatrix();
 
         renderer.setKamera(kamera);
 
-        //System.out.println(auto.transformation.getPosition().distance(kamera.position));
         draw();
 
-        for (Objekt o : debugObjekte) {
+        for (VirtualObject o : debugObjects) {
             renderer.draw(o);
         }
-        debugObjekte.clear();
+        debugObjects.clear();
     }
 
-    public void getRayIntersection(Vector3f rayOrigin, Vector3f rayDirection, float maxDistance, Vector3f outPosition)
-    {
+    public void getRayIntersection(Vector3f rayOrigin, Vector3f rayDirection, float maxDistance, Vector3f outPosition) {
         Vector3f rayDirectionNormalized = VectorMatrixPool.getVector3f();
         Vector3f intersection = VectorMatrixPool.getVector3f();
         Vector3f intersectionOffset = VectorMatrixPool.getVector3f();
@@ -84,16 +75,15 @@ public class Umgebung {
 
         float distanceSquared = maxDistance * maxDistance;
 
-        for (Objekt o : objekte) {
+        for (VirtualObject o : objects) {
             boolean intersecting = o.isRayIntersecting(rayOrigin, rayDirection);
-            if(intersecting)
-            {
+
+            if(intersecting) {
                 intersection.set(o.getRayIntersectionPosition());
                 intersection.sub(rayOrigin, intersectionOffset);
 
                 float distance = intersectionOffset.lengthSquared();
-                if(distance < distanceSquared)
-                {
+                if(distance < distanceSquared) {
                     distanceSquared = distance;
                     outPosition.set(intersection);
                 }
@@ -101,12 +91,11 @@ public class Umgebung {
         }
     }
 
-    public void destroy()
-    {
+    public void destroy() {
         if(auto != null)
             auto.destroy();
 
         renderTarget.destroy();
-        objekte.clear();
+        objects.clear();
     }
 }

@@ -21,22 +21,19 @@ public class DataPackage {
 
     private int customDataLength;
 
-    public DataPackage(int customDataLength)
-    {
+    public DataPackage(int customDataLength) {
         header = new byte[6];
         customData = new byte[customDataLength];
         this.customDataLength = customDataLength;
     }
 
-    public DataPackage(DataPackage other)
-    {
+    public DataPackage(DataPackage other) {
         header = other.header.clone();
         customData = other.customData.clone();
         customDataLength = other.customDataLength;
     }
 
-    public void setHeader(byte type, byte address)
-    {
+    public void setHeader(byte type, byte address) {
         header[0] = type;
         header[1] = address;
         ConstValues.intToByteArray(customDataLength, 2, header);

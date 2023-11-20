@@ -1,9 +1,9 @@
 package org.example.jsonClasses;
 
-public class JsonCarNew {
+public class JsonCar {
     public float max_speed;
     public float max_steering_angle;
     public float wheelbase;
-    public JsonObjectNew object;
-    public JsonSensorNew[] sensors;
+    public JsonObject object;
+    public JsonSensor[] sensors;
 }

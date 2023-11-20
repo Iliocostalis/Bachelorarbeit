@@ -1,52 +1,79 @@
 package org.example.sensors;
 
 import org.example.*;
-import org.example.jsonClasses.JsonSensorNew;
-import org.example.virtualEnvironment.EnviromentLoader;
-import org.example.virtualEnvironment.Objekt;
-import org.example.virtualEnvironment.Umgebung;
+import org.example.jsonClasses.JsonSensor;
+import org.example.virtualEnvironment.Environment;
 import org.joml.Vector3f;
 
 public class DistanceSensor extends Sensor {
 
-    private Objekt debugObject;
     float maxDistance;
     float minDistance;
     int samplingRate;
+    float fov;
+    int sampleCountFov;
+    private long sensorExecuteTime;
+    private long totalTime;
+    private long delayInNanos;
 
-    public DistanceSensor(JsonSensorNew jsonSensor, byte type) {
+    public DistanceSensor(JsonSensor jsonSensor, byte type) {
         super(jsonSensor, type);
 
         maxDistance = jsonSensor.max_distance * 100f;
         minDistance = jsonSensor.min_distance * 100f;
         samplingRate = jsonSensor.sampling_rate;
+        fov = jsonSensor.fov_distance_sensor * ConstValues.DEGREES_TO_RADIANS;
+        sampleCountFov = jsonSensor.sample_count_fov;
 
         dataPackage = new DataPackage(4);
         dataPackage.setHeader(type, address);
 
-        debugObject = EnviromentLoader.getObjekt("default_Icosphere");
+        delayInNanos = 1000*1000*1000 / samplingRate;
+    }
+
+    float calculateDistance() {
+        Vector3f pos = VectorMatrixPool.getVector3f();
+        Vector3f direction = VectorMatrixPool.getVector3f();
+
+        float distance = maxDistance;
+        float rotations = 7.0f * 360.0f * ConstValues.DEGREES_TO_RADIANS;
+        for(int i = 0; i < sampleCountFov; i++){
+            float degree = rotations * ((float)i / sampleCountFov);
+            float fovDegree = fov * ((float)i / sampleCountFov);
+
+            //Default direction -> X+
+            direction.set(1,0,0);
+            direction.rotateY(fovDegree);
+            direction.rotateX(degree);
+            direction.rotate(rotation);
+
+            Environment.environment.getRayIntersection(position, direction, maxDistance, pos);
+            float distanceCurrent = Vector3f.distance(position.x, position.y, position.z, pos.x, pos.y, pos.z);
+            distanceCurrent = Math.max(distanceCurrent, minDistance);
+            distance = Math.min(distanceCurrent, distance);
+
+            //debugObject = EnviromentLoader.getObjekt("default_Icosphere");
+            //debugObject.transformation.setPosition(pos);
+            //Umgebung.umgebung.debugObjekte.add(debugObject);
+        }
+
+        return distance;
     }
 
     @Override
-    public void ausfuehren(long nanos)
-    {
-        Vector3f pos = VectorMatrixPool.getVector3f();
+    public void execute(long nanos) {
 
-        Vector3f direction = VectorMatrixPool.getVector3f();
-        direction.set(1,0,0);
-        direction.rotate(rotation);
+        totalTime += nanos;
 
-        Umgebung.umgebung.getRayIntersection(position, direction, maxDistance, pos);
-        float distance = Vector3f.distance(position.x, position.y, position.z, pos.x, pos.y, pos.z);
-        distance = Math.min(distance, maxDistance);
-        distance = Math.max(distance, minDistance);
+        while(sensorExecuteTime <= totalTime){
+            sensorExecuteTime += delayInNanos;
 
-        debugObject.transformation.setPosition(pos);
-        Umgebung.umgebung.debugObjekte.add(debugObject);
+            float distance = calculateDistance();
 
-        ConstValues.floatToByteArray(distance / 100f, 0, dataPackage.customData);
-        int maxQueueCount = 1 + samplingRate / 4;
-        Schnittstelle.getInstance().senden(dataPackage, maxQueueCount);
+            ConstValues.floatToByteArray(distance / 100f, 0, dataPackage.customData);
+            int maxQueueCount = 1 + samplingRate / 4;
+            Schnittstelle.getInstance().senden(dataPackage, maxQueueCount);
+        }
     }
 
     @Override

@@ -1,6 +1,6 @@
 package org.example.jsonClasses;
 
-public class JsonObjectNew {
+public class JsonObject {
     public float[] position;
     public float[] rotation;
     public float[] color;

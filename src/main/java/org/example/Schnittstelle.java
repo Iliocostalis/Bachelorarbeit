@@ -1,8 +1,7 @@
 package org.example;
 
 import org.example.sensors.DataPackage;
-import org.example.sensors.Sensor;
-import org.example.virtualEnvironment.Umgebung;
+import org.example.virtualEnvironment.Environment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +9,6 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -162,8 +160,8 @@ public class Schnittstelle {
 
                     float throttle = ConstValues.byteArrayToFloat(0, dataPackageIn.customData);
                     float steeringAngle = ConstValues.byteArrayToFloat(4, dataPackageIn.customData);
-                    Umgebung.umgebung.auto.setSpeed(throttle);
-                    Umgebung.umgebung.auto.setSteeringAngle(steeringAngle);
+                    Environment.environment.auto.setSpeed(throttle);
+                    Environment.environment.auto.setSteeringAngle(steeringAngle);
                 }
                 else // wrong data -> skipp
                 {

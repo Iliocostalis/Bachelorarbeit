@@ -15,8 +15,7 @@ public class RenderTarget {
 
     private boolean createdResources;
 
-    public RenderTarget(int width, int height, RENDER_TARGET_COLOR_FORMAT format)
-    {
+    public RenderTarget(int width, int height, RENDER_TARGET_COLOR_FORMAT format) {
         this.width = width;
         this.height = height;
         this.farben = format;
@@ -25,8 +24,7 @@ public class RenderTarget {
         createdResources = true;
     }
 
-    public RenderTarget(int width, int height, int framebufferId, RENDER_TARGET_COLOR_FORMAT format)
-    {
+    public RenderTarget(int width, int height, int framebufferId, RENDER_TARGET_COLOR_FORMAT format) {
         this.width = width;
         this.height = height;
         this.farben = format;
@@ -35,8 +33,7 @@ public class RenderTarget {
         createdResources = false;
     }
 
-    public void createFrameBuffer()
-    {
+    public void createFrameBuffer() {
         framebuffer = glGenFramebuffers();
         colorTexture = glGenTextures();
         depthBuffer = glGenRenderbuffers();
@@ -62,13 +59,7 @@ public class RenderTarget {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    public void zerstoeren()
-    {
-
-    }
-
-    public int byteProPixel()
-    {
+    public int byteProPixel() {
         return switch (farben) {
             case BLACK_WHITE -> 1;
             case RGB -> 3;
@@ -79,8 +70,7 @@ public class RenderTarget {
         };
     }
 
-    public int getOpenGlInternalFormat()
-    {
+    public int getOpenGlInternalFormat() {
         return switch (farben) {
             case BLACK_WHITE -> GL_R8;
             case RGB -> GL_RGB;
@@ -91,8 +81,7 @@ public class RenderTarget {
         };
     }
 
-    public int getOpenGlFormat()
-    {
+    public int getOpenGlFormat() {
         return switch (farben) {
             case BLACK_WHITE -> GL_RED;
             case RGB -> GL_RGB;
@@ -103,8 +92,7 @@ public class RenderTarget {
         };
     }
 
-    public int getOpenGlType()
-    {
+    public int getOpenGlType() {
         return switch (farben) {
             case BLACK_WHITE -> GL_UNSIGNED_BYTE;
             case RGB -> GL_UNSIGNED_BYTE;
@@ -115,8 +103,7 @@ public class RenderTarget {
         };
     }
 
-    public void bind()
-    {
+    public void bind() {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glViewport(0,0, width, height);
 
@@ -124,30 +111,24 @@ public class RenderTarget {
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    public int getWidth()
-    {
+    public int getWidth() {
         return width;
     }
 
-    public int getHeight()
-    {
+    public int getHeight() {
         return height;
     }
 
-    public int getFramebuffer()
-    {
+    public int getFramebuffer() {
         return framebuffer;
     }
 
-    public RENDER_TARGET_COLOR_FORMAT getColorFormat()
-    {
+    public RENDER_TARGET_COLOR_FORMAT getColorFormat() {
         return farben;
     }
 
-    public void destroy()
-    {
-        if(createdResources)
-        {
+    public void destroy() {
+        if(createdResources) {
             glDeleteFramebuffers(framebuffer);
             glDeleteTextures(colorTexture);
             glDeleteRenderbuffers(depthBuffer);
